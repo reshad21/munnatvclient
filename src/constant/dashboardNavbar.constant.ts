@@ -30,6 +30,13 @@ export const NAV_ITEMS = [
     label: "Services", 
     href: "/services" 
   },
+
+  // Video Gallery - index: 12
+  {
+    icon: ImagePlus,
+    label: "Video Gallery",
+    href: "/video-gallery"
+  },
   
   // Packages - index: 9
   { 
