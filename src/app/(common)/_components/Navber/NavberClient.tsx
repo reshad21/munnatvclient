@@ -21,6 +21,7 @@ const menu = [
   { label: "Services", href: "/services", icon: FaConciergeBell },
   { label: "Gallery", href: "/gallery", icon: FaImages },
   { label: "Blogs", href: "/blogs", icon: FaBlog },
+  { label: "Video Gallery", href: "/video-gallery", icon: FaInfoCircle },
 ];
 
 const NavberClient = () => {

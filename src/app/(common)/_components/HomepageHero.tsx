@@ -2,7 +2,7 @@ import React from "react";
 import { Play, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import mosque from "../../../../public/icons/about-us.png";
-import heroBg from "../../../../public/Hero BG Image.png";
+import heroBg from "../../../../public/iptvherobg.png";
 import { getHeroSection } from "@/services/Hero-section";
 import { HeroSlider } from "./HeroSlider";
 import Link from "next/link";
