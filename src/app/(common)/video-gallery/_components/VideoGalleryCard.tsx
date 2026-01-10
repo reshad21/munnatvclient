@@ -12,12 +12,10 @@ export interface VideoGalleryCardProps {
 }
 
 const VideoGalleryCard: React.FC<VideoGalleryCardProps> = ({
-  title,
-  videoUrl,
-  createdAt,
+  ...videoGallery
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const videoId = getYouTubeVideoId(videoUrl);
+  const videoId = getYouTubeVideoId(videoGallery.videoUrl);
 
   const handlePlayClick = () => {
     setIsModalOpen(true);
@@ -37,8 +35,8 @@ const VideoGalleryCard: React.FC<VideoGalleryCardProps> = ({
           onClick={handlePlayClick}
         >
           <img
-            src={getYouTubeThumbnail(videoUrl, "hqdefault")}
-            alt={title}
+            src={getYouTubeThumbnail(videoGallery?.videoUrl, "default")}
+            alt={videoGallery.title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             onError={(e) => {
               e.currentTarget.src = "/placeholder.svg?height=360&width=480";
@@ -64,11 +62,11 @@ const VideoGalleryCard: React.FC<VideoGalleryCardProps> = ({
         {/* Content */}
         <div className="p-5">
           <h3 className="text-lg font-semibold text-gray-800 line-clamp-2 mb-2 group-hover:text-[#0f3d3e] transition-colors">
-            {title}
+            {videoGallery.title}
           </h3>
-          {createdAt && (
+          {videoGallery.createdAt && (
             <p className="text-sm text-gray-500">
-              {new Date(createdAt).toLocaleDateString("en-US", {
+              {new Date(videoGallery.createdAt).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
@@ -100,7 +98,7 @@ const VideoGalleryCard: React.FC<VideoGalleryCardProps> = ({
             {/* YouTube Embed */}
             <iframe
               src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
-              title={title}
+              title={videoGallery.title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               className="w-full h-full rounded-lg shadow-2xl"
