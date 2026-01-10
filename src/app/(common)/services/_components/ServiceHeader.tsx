@@ -4,7 +4,7 @@ import img2 from "../../../../../public/icons/about-us.png";
 import Image from "next/image";
 const ServiceHeader =  async () => {
   const serviceTitle = await getHeroSection([]);
-  const dynamicTitle = serviceTitle?.data[0].serviceTitle;
+  const dynamicTitle = serviceTitle?.data[0]?.serviceTitle;
 
   return (
     <div className="flex flex-col items-center justify-center pt-6 pb-2">

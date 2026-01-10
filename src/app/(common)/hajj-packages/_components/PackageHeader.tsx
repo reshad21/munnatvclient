@@ -4,7 +4,7 @@ import Image from "next/image";
 import { getHeroSection } from "@/services/Hero-section";
 const PackageHeader = async () => {
   const packageTitle = await getHeroSection([]);
-  const dynamicTitle = packageTitle.data[0].packageTitle;
+  const dynamicTitle = packageTitle?.data[0]?.packageTitle;
   return (
     <div>
       <div className="flex flex-col items-center justify-center py-8">
