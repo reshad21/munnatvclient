@@ -12,7 +12,6 @@ export interface VideoGalleryCardProps {
 }
 
 const VideoGalleryCard: React.FC<VideoGalleryCardProps> = ({
-  id,
   title,
   videoUrl,
   createdAt
