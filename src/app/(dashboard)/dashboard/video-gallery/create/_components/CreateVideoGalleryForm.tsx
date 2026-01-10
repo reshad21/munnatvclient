@@ -1,11 +1,13 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { Save, X } from "lucide-react";
+import { Save, X, PlayCircle } from "lucide-react";
 import { showErrorToast, showSuccessToast } from "@/utils/toastMessage";
 import { createVideoGallery } from "@/services/video-gallery";
+import { getYouTubeThumbnail, getYouTubeVideoId } from "@/utils/youtube-utils";
 
 interface VideoGalleryFormData {
     title: string;
@@ -13,17 +15,26 @@ interface VideoGalleryFormData {
     status: string;
 }
 
-
 export default function CreateVideoGalleryForm() {
   const router = useRouter();
+  const [videoId, setVideoId] = useState<string | null>(null);
+  const [thumbnailError, setThumbnailError] = useState(false);
 
-  const { control, handleSubmit, reset } = useForm<VideoGalleryFormData>({
+  const { control, handleSubmit, reset, watch } = useForm<VideoGalleryFormData>({
     defaultValues: {
       title: "",
       videoUrl: "",
       status: "active",
     },
   });
+
+  const watchedVideoUrl = watch("videoUrl");
+
+  useEffect(() => {
+    const id = getYouTubeVideoId(watchedVideoUrl);
+    setVideoId(id);
+    setThumbnailError(false);
+  }, [watchedVideoUrl]);
 
   const onSubmit = async (data: VideoGalleryFormData) => {
     const payload = {
@@ -36,6 +47,7 @@ export default function CreateVideoGalleryForm() {
     if (res.statusCode === 201) {
       showSuccessToast(res.message);
       reset();
+      setVideoId(null);
       router.push("/dashboard/video-gallery");
     } else {
       showErrorToast(res.message || "Create failed");
@@ -78,8 +90,46 @@ export default function CreateVideoGalleryForm() {
             />
           )}
         />
-      </div>
+        
+        {/* YouTube Thumbnail Preview */}
+        {videoId && !thumbnailError && (
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="flex items-start gap-4">
+              <div className="relative flex-shrink-0 group">
+                <img
+                  src={getYouTubeThumbnail(watchedVideoUrl, "mqdefault")}
+                  alt="Video thumbnail"
+                  className="w-48 h-36 object-cover rounded-lg shadow-sm"
+                  onError={() => setThumbnailError(true)}
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-30 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <PlayCircle className="w-12 h-12 text-white" />
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-700 mb-1">Preview</p>
+                <p className="text-xs text-gray-500 break-all">Video ID: {videoId}</p>
+                <a
+                  href={`https://www.youtube.com/watch?v=${videoId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-[#0f3d3e] hover:underline mt-2 inline-block"
+                >
+                  Open on YouTube →
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
 
+        {watchedVideoUrl && !videoId && (
+          <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-sm text-yellow-800">
+              Invalid YouTube URL. Please enter a valid YouTube link.
+            </p>
+          </div>
+        )}
+      </div>
 
       <div className="flex items-center justify-end gap-3 pt-4">
         <button

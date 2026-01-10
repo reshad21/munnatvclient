@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { showErrorToast, showSuccessToast } from "@/utils/toastMessage";
 import { Pencil } from "lucide-react";
@@ -5,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import DeleteVideoDialog from "./DeleteVideoDialog";
 import { updateVideoGalleryStatus } from "@/services/video-gallery";
+import { getYouTubeThumbnail } from "@/utils/youtube-utils";
 
 interface VideoGallery {
   id: string;
@@ -57,6 +59,9 @@ const VideoGalleryTable = ({
                 SN
               </th>
               <th className="text-left py-4 px-6 font-semibold text-gray-700">
+                Thumbnail
+              </th>
+              <th className="text-left py-4 px-6 font-semibold text-gray-700">
                 Title
               </th>
               <th className="text-left py-4 px-6 font-semibold text-gray-700">
@@ -76,7 +81,7 @@ const VideoGalleryTable = ({
           <tbody className="text-sm">
             {videoGalleries.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-8 px-6 text-center text-gray-500">
+                <td colSpan={7} className="py-8 px-6 text-center text-gray-500">
                   No data found
                 </td>
               </tr>
@@ -87,6 +92,16 @@ const VideoGalleryTable = ({
                   className="border-b border-gray-50 hover:bg-gray-50/50"
                 >
                   <td className="py-4 px-6 text-gray-600">{idx + 1}</td>
+                  <td className="py-4 px-6">
+                    <img
+                      src={getYouTubeThumbnail(videoGallery.videoUrl, "default")}
+                      alt={videoGallery.title}
+                      className="w-20 h-14 object-cover rounded shadow-sm"
+                      onError={(e) => {
+                        e.currentTarget.src = "/placeholder.svg?height=90&width=120";
+                      }}
+                    />
+                  </td>
                   <td className="py-4 px-6 text-gray-700">
                     {videoGallery.title}
                   </td>
@@ -127,7 +142,6 @@ const VideoGalleryTable = ({
                       >
                         <Pencil className="w-4 h-4" />
                       </Link>
-                      {/* Add DeleteServiceDialog or similar here if needed */}
                       <DeleteVideoDialog id={videoGallery.id} />
                     </div>
                   </td>
