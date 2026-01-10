@@ -9,6 +9,7 @@ export interface VideoGalleryCardProps {
   title: string;
   videoUrl: string;
   createdAt?: string;
+  status?: boolean;
 }
 
 const VideoGalleryCard: React.FC<VideoGalleryCardProps> = ({

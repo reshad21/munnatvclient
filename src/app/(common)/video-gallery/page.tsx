@@ -17,6 +17,7 @@ const VideoGalleryPage = async (props: {
     { key: "searchTerm", value: search },
     { key: "page", value: page.toString() },
     { key: "limit", value: "9" },
+    { key: "filter", value: JSON.stringify({ status: true }) },
   ];
 
   const videoGalleryRes = await getVideoGalleries(query);
