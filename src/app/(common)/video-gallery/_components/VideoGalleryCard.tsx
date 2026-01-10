@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Play, X } from "lucide-react";
-import { getYouTubeThumbnail, getYouTubeVideoId } from "@/utils/youtube-utils";
+import { getYouTubeVideoId } from "@/utils/youtube-utils";
 
 export interface VideoGalleryCardProps {
   id: string;
@@ -12,18 +12,37 @@ export interface VideoGalleryCardProps {
 }
 
 const VideoGalleryCard: React.FC<VideoGalleryCardProps> = ({
-  ...videoGallery
+  id,
+  title,
+  videoUrl,
+  createdAt
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const videoId = getYouTubeVideoId(videoGallery.videoUrl);
+  const [thumbnailUrl, setThumbnailUrl] = useState<string>("");
+  
+  useEffect(() => {
+    const videoId = getYouTubeVideoId(videoUrl);
+    
+    if (videoId) {
+      const url = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+      setThumbnailUrl(url);
+    } else {
+      setThumbnailUrl("/placeholder.svg?height=360&width=480");
+    }
+  }, [videoUrl]);
 
   const handlePlayClick = () => {
-    setIsModalOpen(true);
+    const videoId = getYouTubeVideoId(videoUrl);
+    if (videoId) {
+      setIsModalOpen(true);
+    }
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+
+  const videoId = getYouTubeVideoId(videoUrl);
 
   return (
     <>
@@ -34,18 +53,17 @@ const VideoGalleryCard: React.FC<VideoGalleryCardProps> = ({
           className="relative aspect-video overflow-hidden bg-gray-100"
           onClick={handlePlayClick}
         >
-          <img
-            src={getYouTubeThumbnail(videoGallery?.videoUrl, "default")}
-            alt={videoGallery.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            onError={(e) => {
-              e.currentTarget.src = "/placeholder.svg?height=360&width=480";
-            }}
-          />
+          {thumbnailUrl && (
+            <img
+              src={thumbnailUrl}
+              alt={title}
+              className="block w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+          )}
 
           {/* Overlay */}
-          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
-            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-300 shadow-lg">
+          <div className="absolute inset-0 bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center pointer-events-none">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center transition-transform duration-300 shadow-lg group-hover:scale-110">
               <Play
                 className="w-8 h-8 text-[#0f3d3e] ml-1"
                 fill="currentColor"
@@ -53,7 +71,7 @@ const VideoGalleryCard: React.FC<VideoGalleryCardProps> = ({
             </div>
           </div>
 
-          {/* Duration Badge (Optional) */}
+          {/* YouTube Badge */}
           <div className="absolute bottom-3 right-3 bg-black bg-opacity-80 text-white text-xs px-2 py-1 rounded">
             YouTube
           </div>
@@ -62,11 +80,11 @@ const VideoGalleryCard: React.FC<VideoGalleryCardProps> = ({
         {/* Content */}
         <div className="p-5">
           <h3 className="text-lg font-semibold text-gray-800 line-clamp-2 mb-2 group-hover:text-[#0f3d3e] transition-colors">
-            {videoGallery.title}
+            {title}
           </h3>
-          {videoGallery.createdAt && (
+          {createdAt && (
             <p className="text-sm text-gray-500">
-              {new Date(videoGallery.createdAt).toLocaleDateString("en-US", {
+              {new Date(createdAt).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
@@ -78,11 +96,11 @@ const VideoGalleryCard: React.FC<VideoGalleryCardProps> = ({
 
       {/* Video Modal */}
       {isModalOpen && videoId && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 animate-fadeIn"
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-90 animate-fadeIn"
           onClick={handleCloseModal}
         >
-          <div
+          <div 
             className="relative w-full max-w-5xl aspect-video"
             onClick={(e) => e.stopPropagation()}
           >
@@ -98,7 +116,7 @@ const VideoGalleryCard: React.FC<VideoGalleryCardProps> = ({
             {/* YouTube Embed */}
             <iframe
               src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
-              title={videoGallery.title}
+              title={title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               className="w-full h-full rounded-lg shadow-2xl"
@@ -106,20 +124,6 @@ const VideoGalleryCard: React.FC<VideoGalleryCardProps> = ({
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-in-out;
-        }
-      `}</style>
     </>
   );
 };
