@@ -10,7 +10,7 @@ import { createVideoGallery } from "@/services/video-gallery";
 interface VideoGalleryFormData {
     title: string;
     videoUrl: string;
-    status: boolean;
+    status: string;
 }
 
 
@@ -21,7 +21,7 @@ export default function CreateVideoGalleryForm() {
     defaultValues: {
       title: "",
       videoUrl: "",
-      status: true,
+      status: "active",
     },
   });
 
