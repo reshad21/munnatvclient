@@ -1,17 +1,20 @@
-import { getPackages } from "@/services/package";
+// import { getPackages } from "@/services/package";
 import HomepageHero from "./_components/HomepageHero";
-import AboutUs from "./about-us/_components/AboutUs";
-import PackageHeader from "./hajj-packages/_components/PackageHeader";
-import PackageSection from "./hajj-packages/_components/PackageSection";
+// import AboutUs from "./about-us/_components/AboutUs";
+// import PackageHeader from "./hajj-packages/_components/PackageHeader";
+// import PackageSection from "./hajj-packages/_components/PackageSection";
 import { TQuery } from "@/types/query.types";
-import FivePillarOfIslam from "./about-us/_components/FIvePillarOfIslam";
-import ServiceHeader from "./services/_components/ServiceHeader";
-import HomeService from "./_components/HomeService";
-import TestimonialSlider from "./_components/Reviews/TestimonialSlider";
-import { getReviews } from "@/services/review";
-import BlogHeader from "./blogs/_components/BlogHeader";
-import BlogSection from "./blogs/_components/BlogSection";
-import { getBlogs } from "@/services/blog";
+// import FivePillarOfIslam from "./about-us/_components/FIvePillarOfIslam";
+// import ServiceHeader from "./services/_components/ServiceHeader";
+// import HomeService from "./_components/HomeService";
+// import TestimonialSlider from "./_components/Reviews/TestimonialSlider";
+// import { getReviews } from "@/services/review";
+// import BlogHeader from "./blogs/_components/BlogHeader";
+// import BlogSection from "./blogs/_components/BlogSection";
+// import { getBlogs } from "@/services/blog";
+import { getVideoGalleries } from "@/services/video-gallery";
+import VideoGallerySection from "./video-gallery/_components/VideoGallerySection";
+import UiPaginationWrapper from "@/components/shared/UiPaginationWrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -38,26 +41,42 @@ const Home = async (props: {
     },
     {
       key: "limit",
-      value: "10",
+      value: "9",
+    },
+
+    {
+      key: "filter",
+      value: JSON.stringify({ status: true }),
     },
   ];
-  const packages = await getPackages(query);
-  const reviewResponse = await getReviews([]);
-  const reviews = reviewResponse?.data?.data || [];
-  const blogResponse = await getBlogs([]);
-  const blogsData = (blogResponse?.data?.data || []).slice(0, 3);
+  // const packages = await getPackages(query);
+  // const reviewResponse = await getReviews([]);
+  // const reviews = reviewResponse?.data?.data || [];
+  // const blogResponse = await getBlogs([]);
+  // const blogsData = (blogResponse?.data?.data || []).slice(0, 3);
+
+  const videoGalleryRes = await getVideoGalleries(query);
+  const videoGalleries = videoGalleryRes?.data?.data || [];
   return (
     <div>
       <HomepageHero />
-      <AboutUs />
-      <ServiceHeader />
-      <HomeService searchParams={props.searchParams} />
-      <PackageHeader />
-      <PackageSection packages={packages?.data?.data} />
-      <FivePillarOfIslam />
-      <TestimonialSlider reviews={reviews} />
-      <BlogHeader />
-      <BlogSection blogs={blogsData} />
+      <VideoGallerySection videoGalleryData={videoGalleries} />
+      {videoGalleryRes?.data?.meta?.totalPages > 1 && (
+        <UiPaginationWrapper
+          active={page}
+          totalPages={videoGalleryRes?.data?.meta?.totalPages || 1}
+          totalItems={videoGalleryRes?.data?.meta?.totalItems || 0}
+        />
+      )}
+      {/* <AboutUs /> */}
+      {/* <ServiceHeader /> */}
+      {/* <HomeService searchParams={props.searchParams} /> */}
+      {/* <PackageHeader /> */}
+      {/* <PackageSection packages={packages?.data?.data} /> */}
+      {/* <FivePillarOfIslam /> */}
+      {/* <TestimonialSlider reviews={reviews} /> */}
+      {/* <BlogHeader /> */}
+      {/* <BlogSection blogs={blogsData} /> */}
     </div>
   );
 };

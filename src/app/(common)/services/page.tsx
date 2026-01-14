@@ -1,5 +1,5 @@
 import React from "react";
-import ServiceHeader from "./_components/ServiceHeader";
+// import ServiceHeader from "./_components/ServiceHeader";
 import HeroSection from "../_components/HeroSection";
 import ServiceSection from "./_components/ServiceSection";
 import { TQuery } from "@/types/query.types";
@@ -23,7 +23,7 @@ const ServicePage = async (props: {
   return (
     <div>
       <HeroSection title="Services" subtitle="Services" />
-      <ServiceHeader />
+      {/* <ServiceHeader /> */}
       <ServiceSection servicesData={servicesData?.data?.data} />
       {servicesData?.data?.meta?.totalPages > 1 && (
         <UiPaginationWrapper
