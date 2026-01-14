@@ -1,6 +1,6 @@
 import React from 'react';
 import HeroSection from '../_components/HeroSection';
-import BlogHeader from './_components/BlogHeader';
+// import BlogHeader from './_components/BlogHeader';
 import BlogSection from './_components/BlogSection';
 import { TQuery } from '@/types/query.types';
 import { getBlogs } from '@/services/blog';
@@ -37,7 +37,7 @@ const BlogPage = async (props: {
     return (
         <div>
             <HeroSection title="Blog" subtitle="Blog" />
-            <BlogHeader />
+            {/* <BlogHeader /> */}
             <BlogSection blogs={blogsData?.data?.data} />
         </div>
     );

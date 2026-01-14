@@ -7,18 +7,18 @@ import {
   FaArrowRight,
   FaBars,
   FaBlog,
-  FaConciergeBell,
+  // FaConciergeBell,
   FaHome,
   FaImages,
   FaInfoCircle,
-  FaSuitcase,
+  // FaSuitcase,
 } from "react-icons/fa";
 
 const menu = [
   { label: "Home", href: "/", icon: FaHome },
   { label: "About Us", href: "/about-us", icon: FaInfoCircle },
-  { label: "Hajj Packages", href: "/hajj-packages", icon: FaSuitcase },
-  { label: "Services", href: "/services", icon: FaConciergeBell },
+  // { label: "Hajj Packages", href: "/hajj-packages", icon: FaSuitcase },
+  // { label: "Services", href: "/services", icon: FaConciergeBell },
   { label: "Gallery", href: "/gallery", icon: FaImages },
   { label: "Blogs", href: "/blogs", icon: FaBlog },
   { label: "Video Gallery", href: "/video-gallery", icon: FaInfoCircle },

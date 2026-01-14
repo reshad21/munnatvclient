@@ -1,6 +1,6 @@
 import React from "react";
 import HeroSection from "../_components/HeroSection";
-import GalleryHeader from "./_components/GalleryHeader";
+// import GalleryHeader from "./_components/GalleryHeader";
 import GallerySection from "./_components/GallerySection";
 import { getGallery } from "@/services/gallery";
 
@@ -9,7 +9,7 @@ const galleryData = await getGallery([]);
   return (
     <div>
       <HeroSection title="Gallery" subtitle="Gallery" />
-      <GalleryHeader/>
+      {/* <GalleryHeader/> */}
       <GallerySection galleryData={galleryData?.data?.data} />
     </div>
   );
