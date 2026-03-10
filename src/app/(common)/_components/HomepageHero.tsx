@@ -54,7 +54,7 @@ const HomepageHero = async ({ height = 'calc(100vh - 80px)' }: HomepageHeroProps
                 <Image src={mosque} alt="mosque icon" width={32} height={32} unoptimized/>
               </div>
               <span className="text-lg font-medium">
-                হজ্জ অ্যাজেন্সী স্বাগতম!
+                MunnaTv - চ্যানেল সম্ভবত
               </span>
             </div>
 

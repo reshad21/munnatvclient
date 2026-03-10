@@ -146,7 +146,7 @@ const Footer = async () => {
   if (!topberData) return null;
 
   const currentYear = new Date().getFullYear();
-  const description = 'আপনার পবিত্র হজ্ব ও ওমরাহ তীর্থযাত্রার পরিকল্পনা এবং বুকিংয়ের জন্য আপনার বিশ্বস্ত অংশীদার, প্রার্থনায় আপনাকে স্বাগতম।';
+  const description = 'বরিশালের প্রথম আইপিটিভি চ্যানেল। আমাদের সাথে থাকুন সর্বশেষ খবর, বিনোদন, এবং আরও অনেক কিছুতে।';
 
   return (
     <footer 
@@ -194,12 +194,12 @@ const Footer = async () => {
           <span>
             Designed and Developed by{' '}
             <a 
-              href="https://mntechdigital.com" 
+              href="https://www.facebook.com/reshad.rashed.7" 
               className="text-red-400 underline"
               target="_blank"
               rel="noopener noreferrer"
             >
-              MNTECH DIGITAL
+              RASHED UZZAMAN RESHAD
             </a>
           </span>
         </div>

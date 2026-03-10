@@ -11,7 +11,7 @@ const VideoGallerySection = async ({
   );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto my-10">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto my-10 px-10">
       {activeVideos.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
           No videos available.

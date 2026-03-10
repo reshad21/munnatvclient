@@ -66,7 +66,7 @@ const OtherAboutUs = async () => {
                 {otherAboutData.trustedReviews}+
               </span>
               <span className="text-white text-sm sm:text-base font-normal max-w-[200px]">
-                হজযাত্রীদের সেবা প্রদান করা হয়েছে
+                বিশ্বস্ত গ্রাহক পর্যালোচনা
               </span>
             </div>
           </div>

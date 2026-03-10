@@ -34,9 +34,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Hilful Fujul | হিলফুল ফুজুল – নতুন চেতনায় প্রতিক্ষণে…",
+  title: "Munna IPTV - বরিশালের প্রথম আইপিটিভি চ্যানেল",
   description:
-    "© হিলফুল ফুজুল মিডিয়া লিমিটেডের একটি প্রতিষ্ঠান। ইসরাফিল ভিলা (তৃতীয় তলা), ফলপট্টি রোড, বরিশাল ৮২০০। ফোন: ০২৪৭৮৮৩০৫৪৫, ০১৬৭০-৬৮৭৯৫২ barishaltimes@gmail.com, bslhasib@gmail.com.",
+    "© 2024 Munna IPTV. বরিশালের প্রথম আইপিটিভি চ্যানেল। আমাদের সাথে থাকুন সর্বশেষ খবর, বিনোদন, এবং আরও অনেক কিছুতে।",
 };
 
 export default function RootLayout({
