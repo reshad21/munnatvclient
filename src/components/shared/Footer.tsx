@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import { FaFacebookF, FaInstagram } from 'react-icons/fa';
 import { Youtube } from 'lucide-react';
-import footerImage from '../../../public/footerimage.png';
 import sitelogo from '../../../public/hilful_fujul.png';
 import { getContactUs } from '@/services/contactus';
 
@@ -152,7 +151,7 @@ const Footer = async () => {
     <footer 
       className="relative bg-black/80 text-white pt-10 pb-4" 
       style={{ 
-        backgroundImage: `url(${footerImage.src})`, 
+        backgroundImage: 'url(/images/foooteriptv.png)', 
         backgroundSize: 'cover', 
         backgroundPosition: 'center' 
       }}

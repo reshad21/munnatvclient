@@ -2,7 +2,8 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {  ChevronRight } from 'lucide-react';
-import kabaimage from "../../../../public/BG (2).png";
+// import kabaimage from "../../../../public/BG (2).png";
+import kabaimage from "../../../../public/images/section-header.png";
 import mosque from "../../../../public/siteicon.png";
 
 interface HeroSectionProps {
