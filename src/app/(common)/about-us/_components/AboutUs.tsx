@@ -19,10 +19,10 @@ const AboutUs = async () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-10 md:gap-16 py-12 px-4 md:px-0">
+    <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-10 md:gap-20 py-12 px-4 md:px-8">
       {/* Left: 2x2 grid of images */}
-      <div className="w-full">
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+      <div className="w-full md:w-3/5">
+        <div className="grid grid-cols-2 gap-4 sm:gap-6">
           {/* Left column - 2 images, top larger than bottom */}
           <div className="flex flex-col gap-3 sm:gap-4">
             {/* Top left - larger image */}
@@ -77,7 +77,7 @@ const AboutUs = async () => {
       <div className="flex flex-col gap-6">
         {/* Section label */}
         <div className="flex items-center gap-2 text-yellow-600 font-semibold text-lg">
-          <Image src={mosque} alt="icon" width={24} height={24} unoptimized/>
+          <Image src={mosque} alt="icon" width={40} height={40} unoptimized/>
           <span>About Us</span>
         </div>
 

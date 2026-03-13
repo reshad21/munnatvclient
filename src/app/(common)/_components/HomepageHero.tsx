@@ -49,12 +49,10 @@ const HomepageHero = async ({ height = 'calc(100vh - 80px)' }: HomepageHeroProps
           {/* Left Content */}
           <div className="space-y-4 md:space-y-6">
             {/* Icon with Text */}
-            <div className="flex items-center gap-3 text-yellow-500">
-              <div className="w-8 h-8 flex items-center justify-center">
-                <Image src={mosque} alt="mosque icon" width={52} height={52} unoptimized/>
-              </div>
+            <div className="flex items-center text-yellow-500">
+              <Image src={mosque} alt="mosque icon" width={60} height={60} unoptimized className="flex-shrink-0"/>
               <span className="text-lg font-medium">
-                MunnaTv - চ্যানেল সম্ভবত
+               Welcome To -- MunnaTv
               </span>
             </div>
 
