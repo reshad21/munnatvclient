@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {  ChevronRight } from 'lucide-react';
 import kabaimage from "../../../../public/BG (2).png";
-import mosque from "../../../../public/icons/about-us.png"
+import mosque from "../../../../public/siteicon.png";
 
 interface HeroSectionProps {
   title: string;
@@ -34,14 +34,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({ title, subtitle }) => {
         </h1>
         
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm md:text-base" aria-label="Breadcrumb">
+        <nav className="flex items-center gap-1 text-sm md:text-base" aria-label="Breadcrumb">
           <Link 
             href="/" 
-            className="text-yellow-400 flex items-center gap-1.5 hover:text-yellow-300 transition-colors duration-200"
+            className="text-yellow-400 flex items-center hover:text-yellow-300 transition-colors duration-200"
           >
             {/* <Home size={18} /> */}
-            <Image src={mosque} alt="Home" width={12} height={12} unoptimized/>
-            <span>Home</span>
+            <Image src={mosque} alt="Home" width={52} height={52} unoptimized/>
+            <span className='-ml-3'>Home</span>
           </Link>
           
           <ChevronRight size={18} className="text-white/70" />

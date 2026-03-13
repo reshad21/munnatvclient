@@ -1,7 +1,7 @@
 import React from "react";
 import { Play, ArrowRight } from "lucide-react";
 import Image from "next/image";
-import mosque from "../../../../public/icons/about-us.png";
+import mosque from "../../../../public/siteicon.png";
 import heroBg from "../../../../public/iptvherobg.png";
 import { getHeroSection } from "@/services/Hero-section";
 import { HeroSlider } from "./HeroSlider";
@@ -51,7 +51,7 @@ const HomepageHero = async ({ height = 'calc(100vh - 80px)' }: HomepageHeroProps
             {/* Icon with Text */}
             <div className="flex items-center gap-3 text-yellow-500">
               <div className="w-8 h-8 flex items-center justify-center">
-                <Image src={mosque} alt="mosque icon" width={32} height={32} unoptimized/>
+                <Image src={mosque} alt="mosque icon" width={52} height={52} unoptimized/>
               </div>
               <span className="text-lg font-medium">
                 MunnaTv - চ্যানেল সম্ভবত
