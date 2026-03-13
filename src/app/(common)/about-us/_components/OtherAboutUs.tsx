@@ -1,9 +1,7 @@
 import Image from "next/image";
 
-import mosque from "../../../../../public/icons/about-us.png";
+import mosque from "../../../../../public/siteicon.png";
 import groupImage from "../../../../../public/Group.png";
-import lantern from "../../../../../public/BG image.png";
-import kaba from "../../../../../public/Kaba Image.png";
 import { getOtherAboutus } from "@/services/OtherAboutUs";
 
 const OtherAboutUs = async () => {
@@ -32,7 +30,7 @@ const OtherAboutUs = async () => {
               unoptimized
             />
             <span className="text-white text-sm sm:text-base font-medium tracking-wide">
-              আমাদের যাত্রা
+              Our Journey
             </span>
           </div>
           {/* Heading */}
@@ -73,37 +71,15 @@ const OtherAboutUs = async () => {
         </div>
 
         {/* Right: Images */}
-        <div className="flex-1 flex items-end justify-center lg:justify-end relative min-h-[300px] sm:min-h-[400px] lg:min-h-[500px] mt-8 sm:mt-12 lg:mt-0 w-full">
-          {/* Kaaba illustration - responsive positioning */}
-          <div className="z-[15] absolute top-[45%] sm:top-[50%] left-[-5%] sm:left-[-7%] scale-75 sm:scale-90 lg:scale-100">
-            <Image
-              src={kaba}
-              alt="Kaaba"
-              width={110}
-              height={110}
-              className="drop-shadow-lg"
-              unoptimized
-            />
-          </div>
-          {/* Two men images - responsive sizing */}
-          <div className="flex gap-2 items-end relative z-[1]">
+        <div className="flex-1 flex items-center justify-center lg:justify-end relative min-h-[300px] sm:min-h-[400px] lg:min-h-[500px] mt-8 sm:mt-12 lg:mt-0 w-full">
+          {/* Image - responsive sizing */}
+          <div className="flex gap-2 items-center relative z-[1]">
             <Image
               src={otherAboutData.image}
-              alt="Men praying"
+              alt="About us"
               width={500}
               height={450}
-              className="object-contain w-[300px] sm:w-[400px] md:w-[450px] lg:w-[500px] h-auto"
-              unoptimized
-            />
-          </div>
-          {/* Gold lantern SVG - responsive visibility and sizing */}
-          <div className="absolute right-0 top-0 opacity-80 hidden md:block">
-            <Image
-              src={lantern}
-              alt="Lantern"
-              width={140}
-              height={360}
-              className="object-contain w-[100px] md:w-[120px] lg:w-[140px] h-auto"
+              className="object-contain w-[300px] sm:w-[400px] md:w-[450px] lg:w-[500px] h-auto rounded-lg shadow-lg"
               unoptimized
             />
           </div>

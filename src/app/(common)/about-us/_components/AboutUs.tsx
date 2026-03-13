@@ -1,7 +1,8 @@
 import Image from "next/image";
-import img2 from "../../../../../public/icons/about-us.png";
-import img3 from "../../../../../public/icons/about-us-1.png";
-import img4 from "../../../../../public/icons/about-us-2.png";
+// import img2 from "../../../../../public/icons/about-us.png";
+// import img3 from "../../../../../public/icons/about-us-1.png";
+// import img4 from "../../../../../public/icons/about-us-2.png";
+import mosque from "../../../../../public/siteicon.png";
 import { getAboutus } from "@/services/About-us";
 import Link from "next/link";
 
@@ -76,8 +77,8 @@ const AboutUs = async () => {
       <div className="flex flex-col gap-6">
         {/* Section label */}
         <div className="flex items-center gap-2 text-yellow-600 font-semibold text-lg">
-          <Image src={img2} alt="icon" width={24} height={24} unoptimized/>
-          <span>আমাদের সম্পর্কে</span>
+          <Image src={mosque} alt="icon" width={24} height={24} unoptimized/>
+          <span>About Us</span>
         </div>
 
         {/* Heading */}
@@ -96,7 +97,7 @@ const AboutUs = async () => {
           <div className="col-span-1 md:col-span-2 flex flex-col gap-4">
             {/* Feature Card 1 */}
             <div className="flex items-start gap-4 bg-[#F8F8F8] rounded-xl p-5 shadow-sm">
-              <Image src={img2} alt="icon" width={40} height={40} unoptimized/>
+              <Image src={mosque} alt="icon" width={40} height={40} unoptimized/>
               <div>
                 <h3 className="font-bold text-lg text-[#184C43]">
                   {aboutUsData.featureTitle1}
@@ -109,7 +110,7 @@ const AboutUs = async () => {
 
             {/* Feature Card 2 */}
             <div className="flex items-start gap-4 bg-[#F8F8F8] rounded-xl p-5 shadow-sm">
-              <Image src={img3} alt="icon" width={40} height={40} unoptimized/>
+              <Image src={mosque} alt="icon" width={40} height={40} unoptimized/>
               <div>
                 <h3 className="font-bold text-lg text-[#184C43]">
                   {aboutUsData.featureTitle2}
@@ -125,7 +126,7 @@ const AboutUs = async () => {
           <div className="md:col-span-1">
             <div className="flex flex-col gap-4 bg-[#F8F8F8] rounded-xl p-3 shadow-sm h-full justify-between items-center text-center">
               <span className="inline-flex items-center justify-center w-12 h-12 rounded-full border-2 border-yellow-600">
-                <Image src={img4} alt="icon" width={40} height={40} unoptimized/>
+                <Image src={mosque} alt="icon" width={40} height={40} unoptimized/>
               </span>
               <div>
                 <h3 className="font-bold text-lg text-[#184C43]">
