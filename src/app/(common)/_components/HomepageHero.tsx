@@ -4,8 +4,8 @@ import Image from "next/image";
 import mosque from "../../../../public/siteicon.png";
 import heroBg from "../../../../public/iptvherobg.png";
 import { getHeroSection } from "@/services/Hero-section";
-import { HeroSlider } from "./HeroSlider";
 import Link from "next/link";
+import HeroVideo from "./HeroVideo";
 
 interface HomepageHeroProps {
   height?: string;
@@ -101,7 +101,7 @@ const HomepageHero = async ({ height = 'calc(100vh - 80px)' }: HomepageHeroProps
 
               {/* Image Container */}
               <div className="relative z-10 w-full">
-                <HeroSlider sliderItems={heroData.images} />
+                <HeroVideo youtubeUrl={heroData.youtubeUrl} />
               </div>
             </div>
           </div>
