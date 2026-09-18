@@ -69,10 +69,12 @@ const ServicesLinks = () => (
   <div>
     <h4 className="font-bold mb-2">Our Services</h4>
     <ul className="space-y-1 text-gray-200">
-      <li>ব্যবস্থা প্রস্তুতকারক</li>
-      <li>থাকার ব্যবস্থা</li>
-      <li>ফ্লাইট বুকিং</li>
-      <li>নিরাপত্তা সেবা</li>
+      <li>আইপিটিভি চ্যানেল</li>
+      <li>ডিজিটাল স্ট্রিমিং</li>
+      <li>ওয়েব ডেভেলপমেন্ট</li>
+      <li>মোবাইল এপ্লিকেশন ডেভেলপমেন্ট</li>
+      <li>ডিজিটাল মার্কেটিং</li>
+      <li>সোশ্যাল মিডিয়া ম্যানেজমেন্ট</li>
     </ul>
   </div>
 );
@@ -145,7 +147,7 @@ const Footer = async () => {
   if (!topberData) return null;
 
   const currentYear = new Date().getFullYear();
-  const description = 'বরিশালের প্রথম আইপিটিভি চ্যানেল। আমাদের সাথে থাকুন সর্বশেষ খবর, বিনোদন, এবং আরও অনেক কিছুতে।';
+  const description = 'বাংলাদেশের প্রথম আইপিটিভি চ্যানেল। আমাদের সাথে থাকুন সর্বশেষ খবর, বিনোদন, এবং আরও অনেক কিছুতে।';
 
   return (
     <footer 

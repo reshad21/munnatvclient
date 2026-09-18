@@ -34,9 +34,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Munna IPTV - বরিশালের প্রথম আইপিটিভি চ্যানেল",
+  title: "Munna IPTV - বাংলাদেশের প্রথম আইপিটিভি চ্যানেল",
   description:
-    "© 2024 Munna IPTV. বরিশালের প্রথম আইপিটিভি চ্যানেল। আমাদের সাথে থাকুন সর্বশেষ খবর, বিনোদন, এবং আরও অনেক কিছুতে।",
+    "© 2024 Munna IPTV. বাংলাদেশের প্রথম আইপিটিভি চ্যানেল। আমাদের সাথে থাকুন সর্বশেষ খবর, বিনোদন, এবং আরও অনেক কিছুতে।",
 };
 
 export default function RootLayout({
