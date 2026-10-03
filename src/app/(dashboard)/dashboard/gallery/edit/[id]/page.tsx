@@ -3,6 +3,7 @@ import { DashboardWrapper } from "../../../_components/DashboardWrapper";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import EditGalleryForm from "./_components/EditGalleryForm";
+import { requirePageAccess } from "@/lib/pageGuard";
 
 interface EditGalleryPageProps {
   params: Promise<{ id: string }>;
@@ -10,6 +11,13 @@ interface EditGalleryPageProps {
 
 const EditGalleryPage = async ({ params }: EditGalleryPageProps) => {
   const { id } = await params;
+
+  const forbidden = await requirePageAccess(
+    "gallery",
+    "edit",
+    "You do not have permission to edit gallery items."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
 
   return (
     <DashboardWrapper>

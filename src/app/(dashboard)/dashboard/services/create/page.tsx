@@ -5,6 +5,7 @@ import { DashboardWrapper } from "../../_components/DashboardWrapper";
 import { ArrowLeft } from "lucide-react";
 import CreateServiceForm from "./_components/CreateServiceForm";
 import Link from "next/link";
+import { Can, Forbidden } from "@/components/permissions";
 
 const CreateServicePage = () => {
 
@@ -20,7 +21,13 @@ const CreateServicePage = () => {
           <span className="font-medium">Back</span>
         </Link>
       </div>
-      <CreateServiceForm/>
+      <Can
+        feature="services"
+        action="create"
+        fallback={<Forbidden message="You do not have permission to create services." />}
+      >
+        <CreateServiceForm />
+      </Can>
     </DashboardWrapper>
   );
 };

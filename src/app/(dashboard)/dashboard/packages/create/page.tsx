@@ -6,6 +6,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import CreatePackageForm from "./_components/CreatePackageForm";
 import { DashboardWrapper } from "../../_components/DashboardWrapper";
+import { Can, Forbidden } from "@/components/permissions";
 
 const CreatePackagePage = () => {
     
@@ -23,7 +24,13 @@ const CreatePackagePage = () => {
         </button>
       </div>
 
-      <CreatePackageForm />
+      <Can
+        feature="packages"
+        action="create"
+        fallback={<Forbidden message="You do not have permission to create packages." />}
+      >
+        <CreatePackageForm />
+      </Can>
     </DashboardWrapper>
   );
 };

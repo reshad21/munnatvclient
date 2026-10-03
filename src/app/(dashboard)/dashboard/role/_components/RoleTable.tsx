@@ -8,13 +8,14 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { loggedUser } from "@/services/auth";
+import { hasPermission } from "@/constant/permissions";
+import { getMyPermissions, loggedUser } from "@/services/auth";
 import { TRole } from "@/types/auth.types";
 import { SquarePen } from "lucide-react";
 import Link from "next/link";
 import DeleteRole from "./DeleteRole";
 import GroupAvatar from "./GroupAvatar";
-import GroupFeature from "./GroupFeature";
+import RolePermissionSummary from "./RolePermissionSummary";
 
  const roleTableHeaders: string[] = [
   "No",
@@ -26,6 +27,11 @@ import GroupFeature from "./GroupFeature";
 
 const RoleTable = async ({ roles }: { roles: TRole[] }) => {
     const currentUser = await loggedUser();
+    const { permissions, isSuperAdmin } = await getMyPermissions();
+    const canEdit =
+        isSuperAdmin || hasPermission(permissions, "roles_permissions", "edit");
+    const canDelete =
+        isSuperAdmin || hasPermission(permissions, "roles_permissions", "delete");
     return (
         <div className="p-5 border shadow-sm rounded-md my-10">
             <div className="mb-5">
@@ -62,24 +68,29 @@ const RoleTable = async ({ roles }: { roles: TRole[] }) => {
                                 <TableCell>{index + 1}</TableCell>
                                 <TableCell>{item.name}</TableCell>
                                 <TableCell>
-                                    <GroupFeature role={item} />
+                                    <RolePermissionSummary role={item} />
                                 </TableCell>
                                 <TableCell>
                                     <GroupAvatar users={item.adminUser} />
                                 </TableCell>
                                 <TableCell className="flex justify-end space-x-2">
                                     <div className="flex space-x-2">
-                                        <Link
-                                            href={`/dashboard/role/${item.id}`}
-                                            className="text-green-600 hover:text-green-800"
-                                        >
-                                            <SquarePen size={18} />
-                                        </Link>
-                                        <DeleteRole
-                                            id={item.id}
-                                            role={item.name}
-                                            userRole={currentUser?.role}
-                                        />
+                                        {canEdit && (
+                                            <Link
+                                                href={`/dashboard/role/${item.id}`}
+                                                aria-label={`Edit ${item.name}`}
+                                                className="text-green-600 hover:text-green-800"
+                                            >
+                                                <SquarePen size={18} />
+                                            </Link>
+                                        )}
+                                        {canDelete && (
+                                            <DeleteRole
+                                                id={item.id}
+                                                role={item.name}
+                                                userRole={currentUser?.role}
+                                            />
+                                        )}
                                     </div>
                                 </TableCell>
                             </TableRow>

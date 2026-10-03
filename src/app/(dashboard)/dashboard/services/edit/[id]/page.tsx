@@ -3,6 +3,7 @@ import { DashboardWrapper } from "../../../_components/DashboardWrapper";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import EditServiceForm from "./_components/EditServiceForm";
+import { requirePageAccess } from "@/lib/pageGuard";
 
 interface EditServicePageProps {
   params: Promise<{ id: string }>;
@@ -10,6 +11,13 @@ interface EditServicePageProps {
 
 const EditServicePage = async ({ params }: EditServicePageProps) => {
   const { id } = await params;
+
+  const forbidden = await requirePageAccess(
+    "services",
+    "edit",
+    "You do not have permission to edit services."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
 
   return (
     <DashboardWrapper>

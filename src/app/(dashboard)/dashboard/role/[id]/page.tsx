@@ -2,6 +2,9 @@ import React from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Forbidden } from "@/components/permissions";
+import { hasPermission } from "@/constant/permissions";
+import { getMyPermissions } from "@/services/auth";
 import EditRoleForm from "./_components/EditRoleForm";
 import { getRoleDetails } from "@/services/role";
 import { DashboardWrapper } from "../../_components/DashboardWrapper";
@@ -9,6 +12,18 @@ import { DashboardWrapper } from "../../_components/DashboardWrapper";
 const EditRole = async (props: { params: Promise<{ id: string }> }) => {
   const params = await props.params;
   const id = params.id;
+
+  const { permissions, isSuperAdmin } = await getMyPermissions();
+  const allowed =
+    isSuperAdmin || hasPermission(permissions, "roles_permissions", "edit");
+  if (!allowed) {
+    return (
+      <DashboardWrapper>
+        <Forbidden message="You do not have permission to edit roles." />
+      </DashboardWrapper>
+    );
+  }
+
   const roleData = await getRoleDetails(id);
 
   // Backend returns { statusCode, message, ... } without `data` on 404/500.

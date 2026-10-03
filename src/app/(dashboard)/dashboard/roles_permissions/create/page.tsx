@@ -1,11 +1,19 @@
 import { getRoles } from "@/services/role";
 import { TQuery } from '@/types/query.types';
 import { DashboardWrapper } from "../../_components/DashboardWrapper";
+import { requirePageAccess } from "@/lib/pageGuard";
 import AdminUserForm from "./_components/AdminUserForm";
 
 const CreateRolePage = async (props: {
   searchParams: Promise<{ search: string; page: string }>;
 }) => {
+  const forbidden = await requirePageAccess(
+    "roles_permissions",
+    "assign",
+    "You do not have permission to create admin users."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
+
   const searchParams = await props.searchParams;
   const search = searchParams.search || "";
   const page = parseInt(searchParams.page) || 1;

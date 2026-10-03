@@ -3,6 +3,7 @@ import { DashboardWrapper } from "../../../_components/DashboardWrapper";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import EditReviewForm from "./_components/EditReviewForm";
+import { requirePageAccess } from "@/lib/pageGuard";
 
 interface EditReviewPageProps {
   params: Promise<{ id: string }>;
@@ -10,6 +11,13 @@ interface EditReviewPageProps {
 
 const EditReviewPage = async ({ params }: EditReviewPageProps) => {
   const { id } = await params;
+
+  const forbidden = await requirePageAccess(
+    "reviews",
+    "edit",
+    "You do not have permission to edit reviews."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
 
   return (
     <DashboardWrapper>

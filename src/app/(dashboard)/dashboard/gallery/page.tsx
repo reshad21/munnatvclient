@@ -3,8 +3,7 @@ import PaginationWrapper from "@/components/shared/PaginationWrapper";
 import { getGallery } from "@/services/gallery";
 import { TQuery } from "@/types/query.types";
 import { DashboardWrapper } from "../_components/DashboardWrapper";
-import Link from "next/link";
-import { Plus } from "lucide-react";
+import ListPageHeader from "@/components/shared/Dashboard/ListPageHeader";
 import GalleryTable from "./_components/GalleryTable";
 
 const GalleryPage = async (props: { searchParams: Promise<{ search: string; page: string }> }) => {
@@ -32,16 +31,11 @@ const GalleryPage = async (props: { searchParams: Promise<{ search: string; page
   const galleryData = await getGallery(query);
   return (
     <DashboardWrapper>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Gallery</h2>
-        <Link
-          href="/dashboard/gallery/create"
-          className="flex items-center gap-2 bg-[#0f3d3e] text-white px-5 py-2.5 rounded-full hover:bg-[#0a2e2f] transition-colors cursor-pointer"
-        >
-          <Plus className="w-5 h-5" />
-          <span className="font-medium">Create New</span>
-        </Link>
-      </div>
+      <ListPageHeader
+        title="Gallery"
+        feature="gallery"
+        createHref="/dashboard/gallery/create"
+      />
       <GalleryTable galleryData={galleryData?.data?.data} />
       {galleryData?.data?.meta?.totalPages > 1 && (
         <PaginationWrapper

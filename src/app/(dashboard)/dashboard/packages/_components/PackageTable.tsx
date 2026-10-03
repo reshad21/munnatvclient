@@ -1,4 +1,5 @@
 "use client";
+import { Can } from "@/components/permissions";
 import { updatePackageStatus } from "@/services/package";
 import { showErrorToast, showSuccessToast } from "@/utils/toastMessage";
 import { Pencil } from "lucide-react";
@@ -67,6 +68,7 @@ const PackageTable = ({ packages }: { packages: PackageApi[] }) => {
                     {new Date(pkg.createdAt).toLocaleDateString()}
                   </td>
                   <td className="py-4 px-6 whitespace-nowrap">
+                    <Can feature="packages" action="status">
                     <button
                       onClick={() => handleStatusChange(pkg)}
                       className={`w-12 h-6 rounded-full relative transition-colors cursor-pointer ${pkg.status ? "bg-[#0f3d3e]" : "bg-gray-300"}`}
@@ -75,16 +77,21 @@ const PackageTable = ({ packages }: { packages: PackageApi[] }) => {
                     >
                       <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${pkg.status ? "right-1" : "left-1"}`} />
                     </button>
+                    </Can>
                   </td>
                   <td className="py-4 px-6 whitespace-nowrap">
                     <div className="flex items-center gap-2">
+                      <Can feature="packages" action="edit">
                       <Link
                         href={`/dashboard/packages/edit/${pkg.id}`}
                         className="w-8 h-8 flex items-center justify-center border border-[#0f3d3e] text-[#0f3d3e] rounded hover:bg-[#0f3d3e] hover:text-white transition-colors cursor-pointer"
                       >
                         <Pencil className="w-4 h-4" />
                       </Link>
+                      </Can>
+                      <Can feature="packages" action="delete">
                       <DeletePackageDialog id={pkg.id} />
+                      </Can>
                     </div>
                   </td>
                 </tr>

@@ -1,5 +1,6 @@
 "use client";
 
+import { Can } from "@/components/permissions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Tooltip,
@@ -112,6 +113,7 @@ const AdminUsersTable = ({
                     </span>
                   </td>
                   <td className="py-4 px-6">
+                    <Can feature="roles_permissions" action="status">
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
@@ -134,9 +136,11 @@ const AdminUsersTable = ({
                         <p>{user.status === "ACTIVE" ? "Active — click to deactivate" : "Inactive — click to activate"}</p>
                       </TooltipContent>
                     </Tooltip>
+                    </Can>
                   </td>
                   <td className="py-4 px-6">
                     <div className="flex items-center justify-end gap-2">
+                      <Can feature="roles_permissions" action="view">
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Link
@@ -151,6 +155,8 @@ const AdminUsersTable = ({
                           <p>View</p>
                         </TooltipContent>
                       </Tooltip>
+                      </Can>
+                      <Can feature="roles_permissions" action="edit">
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Link
@@ -165,6 +171,8 @@ const AdminUsersTable = ({
                           <p>Edit</p>
                         </TooltipContent>
                       </Tooltip>
+                      </Can>
+                      <Can feature="roles_permissions" action="delete">
                       <DeleteAdminUserDialog
                         id={user.id}
                         name={user.fullName}
@@ -173,6 +181,7 @@ const AdminUsersTable = ({
                           isSelf ? "You cannot delete your own account" : undefined
                         }
                       />
+                      </Can>
                     </div>
                   </td>
                 </tr>

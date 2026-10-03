@@ -4,8 +4,16 @@ import MainAboutUsForm from "./_components/MainAboutUsForm";
 import OthersAboutUsForm from "./_components/OthersAboutUsForm";
 import { getAboutus } from "@/services/About-us";
 import { getOtherAboutus } from "@/services/OtherAboutUs";
+import { requirePageAccess } from "@/lib/pageGuard";
 
 const AboutUsPage = async() => {
+  const forbidden = await requirePageAccess(
+    "page-setting/about-us",
+    "view",
+    "You do not have permission to access this page."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
+
   const aboutUsMainFormData = await getAboutus([]);
   const othersAboutUsData = await getOtherAboutus([]);
   return (

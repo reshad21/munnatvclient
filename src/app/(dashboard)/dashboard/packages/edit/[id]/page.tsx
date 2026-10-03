@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import React from "react";
 import EditPackageForm from "./_components/EditPackageForm";
+import { requirePageAccess } from "@/lib/pageGuard";
 import { DashboardWrapper } from "../../../_components/DashboardWrapper";
 import Link from "next/link";
 
@@ -10,6 +11,13 @@ interface EditPackagePageProps {
 
 const EditPackagePage = async ({ params }: EditPackagePageProps) => {
   const { id } = await params;
+
+  const forbidden = await requirePageAccess(
+    "packages",
+    "edit",
+    "You do not have permission to edit packages."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
 
   return (
     <DashboardWrapper>

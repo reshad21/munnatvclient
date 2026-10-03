@@ -3,6 +3,7 @@ import { DashboardWrapper } from "../../../_components/DashboardWrapper";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import ContactDetails from "./_components/ContactDetails";
+import { requirePageAccess } from "@/lib/pageGuard";
 
 interface ViewContactPageProps {
   params: Promise<{ id: string }>;
@@ -10,6 +11,13 @@ interface ViewContactPageProps {
 
 const ViewContactPage = async ({ params }: ViewContactPageProps) => {
   const { id } = await params;
+
+  const forbidden = await requirePageAccess(
+    "contacts",
+    "view",
+    "You do not have permission to view contacts."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
 
   return (
     <DashboardWrapper>

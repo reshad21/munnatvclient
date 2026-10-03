@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getAdminUserDetails } from "@/services/auth";
 import { DashboardWrapper } from "../../_components/DashboardWrapper";
+import { requirePageAccess } from "@/lib/pageGuard";
 import AdminUserDetails from "./_components/AdminUserDetails";
 
 const AdminUserViewPage = async (props: {
@@ -11,6 +12,14 @@ const AdminUserViewPage = async (props: {
 }) => {
   const params = await props.params;
   const id = params.id;
+
+  const forbidden = await requirePageAccess(
+    "roles_permissions",
+    "view",
+    "You do not have permission to view admin users."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
+
   const result = await getAdminUserDetails(id);
 
   if (!result?.data) {

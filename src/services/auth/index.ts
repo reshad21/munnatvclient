@@ -1,10 +1,15 @@
 "use server";
 
 import { apiRequest } from "@/lib/apiRequest";
+import {
+  isSuperAdminRole,
+  type PermissionsMap,
+} from "@/constant/permissions";
 import { TCustomJwtPayload } from "@/types/auth.types";
 import { jwtDecode } from "jwt-decode";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { cache } from "react";
 import { FieldValues } from "react-hook-form";
 
 export const loggedUser = async () => {
@@ -189,6 +194,38 @@ export const updateAdminUser = async (
 
   return await response;
 };
+
+export interface MyPermissionContext {
+  permissions: PermissionsMap;
+  roleName: string;
+  roleId: string | null;
+  isSuperAdmin: boolean;
+}
+
+/**
+ * Cached per-request snapshot of the logged-in user's permissions
+ * (from GET /auth/me). Use in server components for page-level guards.
+ */
+export const getMyPermissions = cache(async (): Promise<MyPermissionContext> => {
+  const fallback: MyPermissionContext = {
+    permissions: {},
+    roleName: "",
+    roleId: null,
+    isSuperAdmin: false,
+  };
+  try {
+    const res = await getLoggedAdminDetails();
+    const roleName = res?.data?.role?.name ?? "";
+    return {
+      permissions: res?.data?.permissions ?? {},
+      roleName,
+      roleId: res?.data?.role?.id ?? res?.data?.roleId ?? null,
+      isSuperAdmin: isSuperAdminRole(roleName),
+    };
+  } catch {
+    return fallback;
+  }
+});
 
 export const dashboardOverview = async () => {
   const response = await apiRequest(`auth/overview-dashboard`, {

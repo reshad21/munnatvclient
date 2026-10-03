@@ -1,4 +1,5 @@
 "use client";
+import { Can } from "@/components/permissions";
 import { GripVertical, Pencil } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -93,6 +94,7 @@ const FivePillarsTable = ({
                     </div>
                   </td>
                   <td className="py-4 px-6">
+                    <Can feature="fivePillarsOfIslam" action="status">
                     <button
                       onClick={() => handleStatusChange(pillar)}
                       className={`w-12 h-6 rounded-full relative transition-colors cursor-pointer ${
@@ -107,16 +109,21 @@ const FivePillarsTable = ({
                         }`}
                       />
                     </button>
+                    </Can>
                   </td>
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-2">
+                      <Can feature="fivePillarsOfIslam" action="edit">
                       <Link
                         href={`/dashboard/fivePillarsOfIslam/edit/${pillar.id}`}
                         className="w-8 h-8 flex items-center justify-center border border-[#0f3d3e] text-[#0f3d3e] rounded hover:bg-[#0f3d3e] hover:text-white transition-colors cursor-pointer"
                       >
                         <Pencil className="w-4 h-4" />
                       </Link>
+                      </Can>
+                      <Can feature="fivePillarsOfIslam" action="delete">
                       <DeleteFIvePillarDialog id={pillar.id} />
+                      </Can>
                     </div>
                   </td>
                 </tr>

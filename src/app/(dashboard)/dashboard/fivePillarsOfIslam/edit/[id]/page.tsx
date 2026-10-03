@@ -3,6 +3,7 @@ import { DashboardWrapper } from "../../../_components/DashboardWrapper";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import EditFivePillarsForm from "./_components/EditFivePillarsForm";
+import { requirePageAccess } from "@/lib/pageGuard";
 
 interface EditFivePillarsPageProps {
   params: Promise<{ id: string }>;
@@ -10,6 +11,13 @@ interface EditFivePillarsPageProps {
 
 const EditFivePillarsPage = async ({ params }: EditFivePillarsPageProps) => {
   const { id } = await params;
+
+  const forbidden = await requirePageAccess(
+    "fivePillarsOfIslam",
+    "edit",
+    "You do not have permission to edit five pillar entries."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
 
   return (
     <DashboardWrapper>

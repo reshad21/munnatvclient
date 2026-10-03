@@ -1,5 +1,6 @@
 "use client";
 
+import { Can } from "@/components/permissions";
 import { updateGalleryStatus } from "@/services/gallery";
 import { showErrorToast, showSuccessToast } from "@/utils/toastMessage";
 import { Pencil } from "lucide-react";
@@ -53,6 +54,7 @@ const GalleryTable = ({ galleryData = [] }: { galleryData?: GalleryItem[] }) => 
                   </td>
                   <td className="py-4 px-6 text-gray-600">{item.createdAt}</td>
                   <td className="py-4 px-6">
+                    <Can feature="gallery" action="status">
                     <button
                       onClick={() => handleStatusChange(item)}
                       className={`w-12 h-6 rounded-full relative transition-colors cursor-pointer ${item.status ? "bg-[#0f3d3e]" : "bg-gray-300"}`}
@@ -61,16 +63,21 @@ const GalleryTable = ({ galleryData = [] }: { galleryData?: GalleryItem[] }) => 
                     >
                       <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${item.status ? "right-1" : "left-1"}`} />
                     </button>
+                    </Can>
                   </td>
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-2">
+                      <Can feature="gallery" action="edit">
                       <Link
                         href={`/dashboard/gallery/edit/${item.id}`}
                         className="w-8 h-8 flex items-center justify-center border border-[#0f3d3e] text-[#0f3d3e] rounded hover:bg-[#0f3d3e] hover:text-white transition-colors cursor-pointer"
                       >
                         <Pencil className="w-4 h-4" />
                       </Link>
+                      </Can>
+                      <Can feature="gallery" action="delete">
                       <DeleteGalleryDialog id={item.id} />
+                      </Can>
                     </div>
                   </td>
                 </tr>

@@ -1,6 +1,7 @@
 "use client";
 
 
+import { Can } from "@/components/permissions";
 import {Pencil, Star } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
@@ -88,6 +89,7 @@ const ReviewsTable = ({ reviewsData = [] }: ReviewsTableProps) => {
                   </td>
                   <td className="py-4 px-6">{renderStars(review.rating)}</td>
                   <td className="py-4 px-6">
+                    <Can feature="reviews" action="status">
                     <button
                       onClick={() => handleStatusChange(review)}
                       className={`w-12 h-6 rounded-full relative transition-colors cursor-pointer ${review.status ? "bg-[#0f3d3e]" : "bg-gray-300"}`}
@@ -96,16 +98,21 @@ const ReviewsTable = ({ reviewsData = [] }: ReviewsTableProps) => {
                     >
                       <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${review.status ? "right-1" : "left-1"}`} />
                     </button>
+                    </Can>
                   </td>
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-2">
+                      <Can feature="reviews" action="edit">
                       <Link
                         href={`/dashboard/reviews/edit/${review.id}`}
                         className="w-8 h-8 flex items-center justify-center border border-[#0f3d3e] text-[#0f3d3e] rounded hover:bg-[#0f3d3e] hover:text-white transition-colors cursor-pointer"
                       >
                         <Pencil className="w-4 h-4" />
                       </Link>
+                      </Can>
+                      <Can feature="reviews" action="delete">
                       <DeleteReviewDialog id={review.id} />
+                      </Can>
                     </div>
                   </td>
                 </tr>

@@ -4,6 +4,7 @@ import { DashboardWrapper } from "../../../_components/DashboardWrapper";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import EditVideoGalleryForm from "./_components/EditVideoGalleryForm";
+import { requirePageAccess } from "@/lib/pageGuard";
 
 interface EditVideoGalleryPageProps {
   params: Promise<{ id: string }>;
@@ -11,6 +12,13 @@ interface EditVideoGalleryPageProps {
 
 const EditVideoGalleryPage = async ({ params }: EditVideoGalleryPageProps) => {
   const { id } = await params;
+
+  const forbidden = await requirePageAccess(
+    "video-gallery",
+    "edit",
+    "You do not have permission to edit videos."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
 
   return (
     <DashboardWrapper>

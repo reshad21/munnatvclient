@@ -11,12 +11,20 @@ export interface TCustomJwtPayload extends JwtPayload {
   exp: number;
 }
 
+export type TRolePermission = {
+  id?: string;
+  feature: string;
+  action: string;
+  roleId?: string;
+};
+
 export type TRole = {
   id: string;
   name: string;
   isDeleted?: boolean;
   status: "ACTIVE" | "INACTIVE";
   roleFeature?: TRoleFeature[];
+  rolePermission?: TRolePermission[];
   adminUser?: TAdminUser[];
   createdAt?: Date;
   updatedAt?: Date;

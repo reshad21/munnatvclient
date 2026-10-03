@@ -3,6 +3,7 @@ import { DashboardWrapper } from "../../../_components/DashboardWrapper";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import EditBlogForm from "./_components/EditBlogForm";
+import { requirePageAccess } from "@/lib/pageGuard";
 
 interface EditBlogPageProps {
   params: Promise<{ id: string }>;
@@ -10,6 +11,13 @@ interface EditBlogPageProps {
 
 const EditBlogPage = async ({ params }: EditBlogPageProps) => {
   const { id } = await params;
+
+  const forbidden = await requirePageAccess(
+    "blogs",
+    "edit",
+    "You do not have permission to edit blogs."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
 
   return (
     <DashboardWrapper>

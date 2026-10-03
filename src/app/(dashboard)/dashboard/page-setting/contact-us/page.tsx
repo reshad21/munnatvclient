@@ -2,8 +2,16 @@ import React from "react";
 import { DashboardWrapper } from "../../_components/DashboardWrapper";
 import ContactUsCRUD from "./_components/ContactUsCRUD";
 import { getContactUs } from "@/services/contactus";
+import { requirePageAccess } from "@/lib/pageGuard";
 
 const ContactUsPage = async() => {
+  const forbidden = await requirePageAccess(
+    "page-setting/contact-us",
+    "view",
+    "You do not have permission to access this page."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
+
   const contactUsData = await getContactUs([]);
   console.log("seee contactus data==>",contactUsData.data.data)
   return (

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { getAdminUserDetails, loggedUser } from "@/services/auth";
 import { getRoles } from "@/services/role";
 import { DashboardWrapper } from "../../../_components/DashboardWrapper";
+import { requirePageAccess } from "@/lib/pageGuard";
 import EditAdminUserForm from "./_components/EditAdminUserForm";
 
 const EditAdminUserPage = async (props: {
@@ -12,6 +13,14 @@ const EditAdminUserPage = async (props: {
 }) => {
   const params = await props.params;
   const id = params.id;
+
+  const forbidden = await requirePageAccess(
+    "roles_permissions",
+    "edit",
+    "You do not have permission to edit admin users."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
+
 
   const [result, rolesData, currentUser] = await Promise.all([
     getAdminUserDetails(id),

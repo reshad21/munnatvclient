@@ -1,5 +1,6 @@
 "use client";
 
+import { Can } from "@/components/permissions";
 import { showErrorToast, showSuccessToast } from "@/utils/toastMessage";
 import { Pencil, } from "lucide-react";
 import Image from "next/image";
@@ -83,6 +84,7 @@ const BlogsTable = ({ blogs }: { blogs: Blog[] }) => {
                   })()}
                 </td>
                 <td className="py-4 px-6">
+                  <Can feature="blogs" action="status">
                   <button
                     onClick={() => handleStatusChange(blog)}
                     className={`w-12 h-6 rounded-full relative transition-colors cursor-pointer ${blog.status ? "bg-[#0f3d3e]" : "bg-gray-300"
@@ -95,16 +97,21 @@ const BlogsTable = ({ blogs }: { blogs: Blog[] }) => {
                         }`}
                     />
                   </button>
+                  </Can>
                 </td>
                 <td className="py-4 px-6">
                   <div className="flex items-center gap-2">
+                    <Can feature="blogs" action="edit">
                     <Link
                       href={`/dashboard/blogs/edit/${blog.id}`}
                       className="w-8 h-8 flex items-center justify-center border border-[#0f3d3e] text-[#0f3d3e] rounded hover:bg-[#0f3d3e] hover:text-white transition-colors cursor-pointer"
                     >
                       <Pencil className="w-4 h-4" />
                     </Link>
+                    </Can>
+                    <Can feature="blogs" action="delete">
                     <DeleteBlogDialog id={blog.id} />
+                    </Can>
                   </div>
                 </td>
               </tr>

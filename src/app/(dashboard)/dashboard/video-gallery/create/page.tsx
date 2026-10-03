@@ -3,8 +3,15 @@ import { DashboardWrapper } from '../../_components/DashboardWrapper'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import CreateVideoGalleryForm from './_components/CreateVideoGalleryForm'
+import { requirePageAccess } from "@/lib/pageGuard";
 
-const CreateVideoGalleryPage = () => {
+const CreateVideoGalleryPage = async () => {
+  const forbidden = await requirePageAccess(
+    "video-gallery",
+    "create",
+    "You do not have permission to create videos."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
   return (
     <DashboardWrapper>
       <div className="flex items-center justify-between mb-6">

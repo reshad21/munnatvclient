@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
+import { Can } from "@/components/permissions";
 import { showErrorToast, showSuccessToast } from "@/utils/toastMessage";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
@@ -119,6 +120,7 @@ const VideoGalleryTable = ({
                     {new Date(videoGallery.createdAt).toLocaleDateString()}
                   </td>
                   <td className="py-4 px-6">
+                    <Can feature="video-gallery" action="status">
                     <button
                       onClick={() => handleStatusChange(videoGallery)}
                       className={`w-12 h-6 rounded-full relative transition-colors cursor-pointer ${
@@ -133,16 +135,21 @@ const VideoGalleryTable = ({
                         }`}
                       />
                     </button>
+                    </Can>
                   </td>
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-2">
+                      <Can feature="video-gallery" action="edit">
                       <Link
                         href={`/dashboard/video-gallery/edit/${videoGallery.id}`}
                         className="w-8 h-8 flex items-center justify-center border border-[#0f3d3e] text-[#0f3d3e] rounded hover:bg-[#0f3d3e] hover:text-white transition-colors cursor-pointer"
                       >
                         <Pencil className="w-4 h-4" />
                       </Link>
+                      </Can>
+                      <Can feature="video-gallery" action="delete">
                       <DeleteVideoDialog id={videoGallery.id} />
+                      </Can>
                     </div>
                   </td>
                 </tr>

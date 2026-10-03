@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import { PermissionProvider } from "@/components/permissions";
 import { getLoggedAdminDetails } from "@/services/auth";
 import { Navbar } from "./_components/DashboardNavbar";
 import { Sidebar } from "./_components/DashboardSidebar";
@@ -57,15 +58,20 @@ export default async function DashboardLayout({
         },
       };
 
+  const permissions = me?.permissions ?? {};
+  const roleName = me?.role?.name ?? "";
+
   return (
     <section className="flex min-h-screen flex-col">
-      <Navbar adminData={adminData} />
-      <div className="flex flex-1">
-        <Sidebar adminData={adminData} />
-        <main className="flex-1 overflow-auto ml-0 md:ml-56 pt-0 mt-0">
-          {children}
-        </main>
-      </div>
+      <PermissionProvider permissions={permissions} roleName={roleName}>
+        <Navbar adminData={adminData} />
+        <div className="flex flex-1">
+          <Sidebar adminData={adminData} />
+          <main className="flex-1 overflow-auto ml-0 md:ml-56 pt-0 mt-0">
+            {children}
+          </main>
+        </div>
+      </PermissionProvider>
     </section>
   );
 }

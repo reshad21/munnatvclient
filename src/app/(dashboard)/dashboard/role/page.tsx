@@ -6,10 +6,18 @@ import { getRoles } from "@/services/role";
 import { DashboardWrapper } from "../_components/DashboardWrapper";
 import RoleHeader from "./_components/RoleHeader";
 import RoleTable from "./_components/RoleTable";
+import { requirePageAccess } from "@/lib/pageGuard";
 
 const RoleManagement = async (props: {
     searchParams: Promise<{ page: string }>;
 }) => {
+    const forbidden = await requirePageAccess(
+        "roles_permissions",
+        "view",
+        "You do not have permission to view roles."
+    );
+    if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
+
     const searchParams = await props.searchParams;
     const page = Number(searchParams.page) || 1;
     const query: TQuery[] = [

@@ -3,8 +3,15 @@ import { DashboardWrapper } from "../../_components/DashboardWrapper";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import CreateBlogForm from "./_components/CreateBlogForm";
+import { requirePageAccess } from "@/lib/pageGuard";
 
-const CreateBlogPage = () => {
+const CreateBlogPage = async () => {
+  const forbidden = await requirePageAccess(
+    "blogs",
+    "create",
+    "You do not have permission to create blogs."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
   return (
     <DashboardWrapper>
       <div className="flex items-center justify-between mb-6">

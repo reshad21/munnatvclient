@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
     Form,
     FormControl,
@@ -16,18 +14,46 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { updateRole } from "@/services/role";
 import { showErrorToast, showSuccessToast } from "@/utils/toastMessage";
-import { Check, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PulseLoader } from "react-spinners";
 import { DashboardWrapper } from "../../../_components/DashboardWrapper";
-import { RoleFeatures } from "@/constant/roleFeatures/index";
-import { createRoleSchema, type CreateRoleFormValues } from "@/validations/role.validation";
-import type { TAdminUser } from "@/types/auth.types";
-import GroupAvatar from "../../_components/GroupAvatar";
+import RolePermissionMatrix from "../../_components/RolePermissionMatrix";
+import {
+    canonicalFeatureKey,
+    countSelectedPermissions,
+    FEATURE_KEYS,
+    SUPPORTED_ACTIONS,
+    type PermissionsMap,
+} from "@/constant/permissions";
+import { rolePermissionSchema, type RolePermissionFormValues } from "@/validations/role.validation";
 import Link from "next/link";
+
+/** Prefill the matrix from granular rows, falling back to legacy features. */
+const buildInitialPermissions = (roleData: any): PermissionsMap => {
+    const map: PermissionsMap = {};
+    const rows = roleData?.rolePermission ?? [];
+    if (rows.length > 0) {
+        for (const row of rows) {
+            const feature = canonicalFeatureKey(row.feature);
+            if (!FEATURE_KEYS.includes(feature)) continue;
+            const supported = SUPPORTED_ACTIONS[feature] ?? [];
+            if (!(supported as string[]).includes(row.action)) continue;
+            if (!map[feature]) map[feature] = [];
+            if (!map[feature].includes(row.action)) map[feature].push(row.action);
+        }
+        return map;
+    }
+    for (const f of roleData?.roleFeature ?? []) {
+        const feature = canonicalFeatureKey(f.path ?? f.name ?? "");
+        if (!FEATURE_KEYS.includes(feature)) continue;
+        map[feature] = [...(SUPPORTED_ACTIONS[feature] ?? [])];
+    }
+    return map;
+};
 
 export default function EditRoleForm({
     roleData,
@@ -38,63 +64,31 @@ export default function EditRoleForm({
 }) {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
-
     const isSuperAdmin =
         (roleData?.name ?? "").toLowerCase() === "super admin";
 
-    // Merge role features with all available features to show checked status.
-    // Matches Create Role logic, but pre-fills from the fetched role.
-    // Match by name so legacy/seeded path variants still resolve correctly.
-    const roleFeatures = roleData?.roleFeature ?? [];
-    const initialFeatures = RoleFeatures.map((feature) => ({
-        ...feature,
-        isChecked: roleFeatures.some(
-            (roleFeature: any) => roleFeature.name === feature.name
-        ),
-    }));
+    const [permissions, setPermissions] = useState<PermissionsMap>(() =>
+        buildInitialPermissions(roleData)
+    );
 
-    const [features, setFeatures] = useState(initialFeatures);
-    const selectedFeaturesCount = features.filter(
-        (feature) => feature.isChecked
-    ).length;
-
-    // Same validation rules as Create Role.
-    const form = useForm<CreateRoleFormValues>({
-        resolver: zodResolver(createRoleSchema),
+    const form = useForm<RolePermissionFormValues>({
+        resolver: zodResolver(rolePermissionSchema),
         defaultValues: {
             roleName: roleData?.name ?? "",
-            features: initialFeatures,
         },
     });
 
-    const assignedAdmins: TAdminUser[] = roleData?.adminUser ?? [];
-
-    const handleFeatureCheck = (index: number) => {
-        const feature = features[index];
-        // Don't allow removing the core permission from Super Admin in the UI;
-        // the backend also rejects it with a 403 as a second layer.
-        if (isSuperAdmin && feature.name === "Roles" && feature.isChecked) {
-            showErrorToast("Super Admin must keep the Roles permission");
+    const onSubmit = async (data: RolePermissionFormValues) => {
+        if (!isSuperAdmin && countSelectedPermissions(permissions) === 0) {
+            showErrorToast("Select at least one permission");
             return;
         }
-        const updatedFeatures = [...features];
-        updatedFeatures[index].isChecked = !updatedFeatures[index].isChecked;
-        setFeatures(updatedFeatures);
-        form.setValue("features", updatedFeatures);
-    };
-
-    const onSubmit = async (data: CreateRoleFormValues) => {
-        const selectedFeatures = data.features
-            .filter((feature: any) => feature.isChecked)
-            .map((feature: any) => ({
-                name: feature.name,
-                index: feature.index,
-                path: feature.path,
-            }));
 
         const payload = {
             name: data.roleName,
-            roleFeature: selectedFeatures,
+            permissions: Object.entries(permissions).flatMap(([feature, actions]) =>
+                actions.map((action) => ({ feature, action }))
+            ),
         };
 
         startTransition(async () => {
@@ -146,7 +140,8 @@ export default function EditRoleForm({
                                             </FormControl>
                                             {isSuperAdmin ? (
                                                 <p className="text-sm text-muted-foreground">
-                                                    The Super Admin role cannot be renamed.
+                                                    The Super Admin role cannot be renamed and
+                                                    always keeps all permissions (read-only).
                                                 </p>
                                             ) : (
                                                 <FormMessage />
@@ -156,107 +151,11 @@ export default function EditRoleForm({
                                 />
                             </div>
 
-                            <div className="space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-lg font-semibold">Feature Permissions</h2>
-                                    <Badge
-                                        variant="outline"
-                                        className="bg-primary/5 px-3 py-1 text-primary"
-                                    >
-                                        {selectedFeaturesCount} selected
-                                    </Badge>
-                                </div>
-
-                                <div className="rounded-lg border border-slate-200">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 divide-y">
-                                        {features.map((feature: any, featureIndex: number) => (
-                                            <div
-                                                key={feature.index}
-                                                className={`transition-colors ${feature.isChecked
-                                                        ? "bg-primary/5"
-                                                        : "hover:bg-slate-50"
-                                                    }`}
-                                            >
-                                                <div className="flex items-center justify-between p-4">
-                                                    <FormField
-                                                        control={form.control}
-                                                        name={`features.${featureIndex}.isChecked`}
-                                                        render={({ field }) => (
-                                                            <FormItem className="flex w-full items-center space-x-3 space-y-0">
-                                                                <FormControl>
-                                                                    <Checkbox
-                                                                        checked={field.value}
-                                                                        onCheckedChange={() =>
-                                                                            handleFeatureCheck(featureIndex)
-                                                                        }
-                                                                        className="cursor-pointer"
-                                                                    />
-                                                                </FormControl>
-                                                                <div className="flex-1">
-                                                                    <FormLabel className="text-base font-medium">
-                                                                        {feature.name}
-                                                                    </FormLabel>
-                                                                    {feature.path && (
-                                                                        <p className="text-sm text-muted-foreground">
-                                                                            {feature.path}
-                                                                        </p>
-                                                                    )}
-                                                                </div>
-                                                                {feature.isChecked && (
-                                                                    <Check className="h-5 w-5 text-primary" />
-                                                                )}
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-lg font-semibold">Assigned Admins</h2>
-                                    <Badge
-                                        variant="outline"
-                                        className="bg-primary/5 px-3 py-1 text-primary"
-                                    >
-                                        {assignedAdmins.length} assigned
-                                    </Badge>
-                                </div>
-                                <div className="rounded-lg border border-slate-200 p-4">
-                                    {assignedAdmins.length > 0 ? (
-                                        <div className="flex flex-col gap-4">
-                                            <GroupAvatar users={assignedAdmins} />
-                                            <ul className="divide-y divide-slate-100">
-                                                {assignedAdmins.map((admin) => (
-                                                    <li
-                                                        key={admin.id}
-                                                        className="flex items-center justify-between py-2 text-sm"
-                                                    >
-                                                        <span className="font-medium">
-                                                            {admin.fullName}
-                                                        </span>
-                                                        <span className="text-muted-foreground">
-                                                            {admin.email}
-                                                        </span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                            <p className="text-sm text-muted-foreground">
-                                                To move an admin to another role, use the admin
-                                                management flow (update admin role). Admins are
-                                                shown here read-only.
-                                            </p>
-                                        </div>
-                                    ) : (
-                                        <p className="text-sm text-muted-foreground">
-                                            No admins are assigned to this role yet.
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
+                            <RolePermissionMatrix
+                                value={permissions}
+                                onChange={setPermissions}
+                                readOnly={isSuperAdmin}
+                            />
 
                             <Separator className="my-8" />
 

@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "@/constant/dashboardNavbar.constant";
+import { usePermissions } from "@/components/permissions";
+import { sidebarHrefToFeature } from "@/constant/permissions";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import React, { useState } from "react";
 
@@ -15,80 +17,38 @@ interface SidebarProps {
   onNavItemClick?: () => void;
 }
 
-export function Sidebar({ adminData, isMobile, onNavItemClick }: SidebarProps) {
+export function Sidebar({ isMobile, onNavItemClick }: SidebarProps) {
   const pathname = usePathname();
+  const { permissions, isSuperAdmin } = usePermissions();
 
-  // Super Admin sees every menu item regardless of stored feature paths.
-  const isSuperAdmin =
-    (adminData?.role?.name ?? "").toLowerCase() === "super admin";
-
-  // Feature paths are stored in two vocabularies: the backend seed uses
-  // `roles_permissions` / `page-setting` / `fivePillarsOfIslam`, while roles
-  // created from the dashboard store `roles` / `settings` / `fivepillars`.
-  // Normalize both sides so the permission filter works for either spelling.
-  const normalizeFeaturePath = (raw: string) => {
-    const key = (raw ?? "").replace(/^\/+|\/+$/g, "").toLowerCase();
-    const aliases: Record<string, string> = {
-      roles: "roles_permissions",
-      settings: "page-setting",
-      fivepillars: "fivepillarsofislam",
-      fivepillar: "fivepillarsofislam",
-    };
-    return aliases[key] ?? key;
+  // A menu item is visible with "view" on its canonical feature.
+  // Dashboard / Log Out have no feature and are always visible.
+  // Super Admin bypasses all checks.
+  const isItemAllowed = (href: string, label: string) => {
+    if (href === "/dashboard" || label === "Log Out") return true;
+    if (isSuperAdmin) return true;
+    const feature = sidebarHrefToFeature(href);
+    if (!feature) return true;
+    return !!permissions[feature]?.includes("view");
   };
 
-  // Extract allowed paths from roleFeature and normalize them
-  const allowedPaths: string[] =
-    adminData?.role?.roleFeature?.map((feature: any) =>
-      normalizeFeaturePath(feature.path)
-    ) ?? [];
+  const filteredNavItems = NAV_ITEMS.filter((item) => {
+    if (!isItemAllowed(item.href, item.label)) return false;
 
-  // console.log("Allowed Paths:", allowedPaths);
-  // console.log("Admin Data:", adminData);
-
-  // Helper function to normalize href for comparison
-  const normalizeHref = (href: string) => {
-    // Remove /dashboard/ prefix and leading/trailing slashes
-    return normalizeFeaturePath(
-      href.replace(/^\/dashboard\/|^\//, "").replace(/\/$/, "")
-    );
-  };
-
-  // "/role" (role CRUD) and "/roles_permissions" (admin users) share the same
-  // "Roles" feature permission.
-  const ROLE_PERMISSION = "roles_permissions";
-  const isRolesPath = (normalizedHref: string) =>
-    normalizedHref === ROLE_PERMISSION || normalizedHref === "role";
-
-  const filteredNavItems = isSuperAdmin
-    ? NAV_ITEMS
-    : NAV_ITEMS.filter((item) => {
-    const normalizedHref = normalizeHref(item.href);
-
-    // Always show Dashboard and Log Out
-    if (item.href === "/dashboard" || item.label === "Log Out") return true;
-
-    // Check if the item itself is allowed (with roles alias)
-    if (
-      allowedPaths.includes(normalizedHref) ||
-      (isRolesPath(normalizedHref) && allowedPaths.includes(ROLE_PERMISSION))
-    )
-      return true;
-
-    // If item has children, check if any child is allowed.
-    // A parent-level grant (e.g. legacy `settings`) also unlocks its children.
+    // If item has children, keep only allowed children (or all for a
+    // parent-level grant); hide the parent when nothing is allowed.
     if (item.children && Array.isArray(item.children)) {
-      if (allowedPaths.includes(normalizedHref)) return true;
-      return item.children.some((child: any) => {
-        const normalizedChildHref = normalizeHref(child.href);
-        return allowedPaths.includes(normalizedChildHref);
-      });
+      if (isSuperAdmin) return true;
+      const parentFeature = sidebarHrefToFeature(item.href);
+      if (parentFeature && permissions[parentFeature]?.includes("view"))
+        return true;
+      return item.children.some((child: any) =>
+        isItemAllowed(child.href, child.label)
+      );
     }
 
-    return false;
+    return true;
   });
-
-  // console.log("Filtered Nav Items:", filteredNavItems);
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
@@ -119,16 +79,17 @@ export function Sidebar({ adminData, isMobile, onNavItemClick }: SidebarProps) {
               filteredNavItems.map((item) => {
                 const Icon = item.icon;
                 if (item.children && Array.isArray(item.children)) {
-                  // Filter children based on allowed paths.
-                  // Super Admin (or a parent-level grant) sees all children.
-                  const filteredChildren =
+                  // Filter children based on view permission
+                  const parentFeature = sidebarHrefToFeature(item.href);
+                  const parentGranted =
                     isSuperAdmin ||
-                    allowedPaths.includes(normalizeHref(item.href))
-                      ? item.children
-                      : item.children.filter((child: any) => {
-                          const normalizedChildHref = normalizeHref(child.href);
-                          return allowedPaths.includes(normalizedChildHref);
-                        });
+                    (parentFeature &&
+                      permissions[parentFeature]?.includes("view"));
+                  const filteredChildren = parentGranted
+                    ? item.children
+                    : item.children.filter((child: any) =>
+                        isItemAllowed(child.href, child.label)
+                      );
 
                   // Don't show parent if no children are allowed
                   if (filteredChildren.length === 0) return null;

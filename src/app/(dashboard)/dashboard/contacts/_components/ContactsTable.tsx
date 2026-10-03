@@ -1,5 +1,6 @@
 "use client";
 
+import { Can } from "@/components/permissions";
 import { Eye } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
@@ -68,13 +69,17 @@ const ContactsTable = ({ contactsData }: ContactsTableProps) => {
                     </td>
                     <td className="py-4 px-6 whitespace-nowrap">
                       <div className="flex items-center gap-2">
+                        <Can feature="contacts" action="view">
                         <Link
                           href={`/dashboard/contacts/view/${contact.id}`}
                           className="w-8 h-8 flex items-center justify-center border border-[#0f3d3e] text-[#0f3d3e] rounded hover:bg-[#0f3d3e] hover:text-white transition-colors cursor-pointer"
                         >
                           <Eye className="w-4 h-4" />
                         </Link>
+                        </Can>
+                        <Can feature="contacts" action="delete">
                         <DeleteContactsDialog id={contact.id} />
+                        </Can>
                       </div>
                     </td>
                   </tr>

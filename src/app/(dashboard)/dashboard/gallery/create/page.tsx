@@ -3,8 +3,15 @@ import { DashboardWrapper } from "../../_components/DashboardWrapper";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import CreateGalleryForm from "./_components/CreateGalleryForm";
+import { requirePageAccess } from "@/lib/pageGuard";
 
-const CreateGalleryPage = () => {
+const CreateGalleryPage = async () => {
+  const forbidden = await requirePageAccess(
+    "gallery",
+    "create",
+    "You do not have permission to create gallery items."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
   return (
     <DashboardWrapper>
       <div className="flex items-center justify-between mb-6">

@@ -14,6 +14,12 @@ export const createRoleSchema = z.object({
 
 export type CreateRoleFormValues = z.infer<typeof createRoleSchema>;
 
+export const rolePermissionSchema = z.object({
+  roleName: z.string().min(1, "Role name is required"),
+});
+
+export type RolePermissionFormValues = z.infer<typeof rolePermissionSchema>;
+
 export type TRoleFeature = {
   name: string;
   isChecked: boolean;

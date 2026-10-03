@@ -4,10 +4,18 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import AdminUsersTable from "./_components/AdminUsersTable";
 import { getAdminUsers, loggedUser } from "@/services/auth";
+import { requirePageAccess } from "@/lib/pageGuard";
 
 const RolesandPermissionPage = async (props: {
   searchParams: Promise<{ search: string; page: string }>;
 }) => {
+  const forbidden = await requirePageAccess(
+    "roles_permissions",
+    "view",
+    "You do not have permission to view admin users."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
+
   const searchParams = await props.searchParams;
   const search = searchParams.search || "";
   const page = parseInt(searchParams.page) || 1;

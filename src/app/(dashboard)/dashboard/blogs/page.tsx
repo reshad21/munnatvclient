@@ -1,8 +1,7 @@
 import React from "react";
 import { DashboardWrapper } from "../_components/DashboardWrapper";
-import { Plus } from "lucide-react";
-import Link from "next/link";
 import BlogsTable from "./_components/BlogsTable";
+import ListPageHeader from "@/components/shared/Dashboard/ListPageHeader";
 import { TQuery } from "@/types/query.types";
 import { getBlogs } from "@/services/blog";
 import PaginationWrapper from "@/components/shared/PaginationWrapper";
@@ -38,16 +37,11 @@ const BlogsPage = async (props: {
   console.log("get blog data==>", blogsData);
   return (
     <DashboardWrapper>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Blogs</h2>
-        <Link
-          href="/dashboard/blogs/create"
-          className="flex items-center gap-2 bg-[#0f3d3e] text-white px-5 py-2.5 rounded-full hover:bg-[#0a2e2f] transition-colors cursor-pointer"
-        >
-          <Plus className="w-5 h-5" />
-          <span className="font-medium">Create New</span>
-        </Link>
-      </div>
+      <ListPageHeader
+        title="Blogs"
+        feature="blogs"
+        createHref="/dashboard/blogs/create"
+      />
       <BlogsTable blogs={blogsData?.data?.data} />
       {/* pagination */}
       {blogsData?.data?.meta?.totalPages > 1 && (

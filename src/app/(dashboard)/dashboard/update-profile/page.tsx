@@ -1,8 +1,16 @@
 import { loggedUser } from "@/services/auth";
 import { DashboardWrapper } from "../_components/DashboardWrapper";
+import { requirePageAccess } from "@/lib/pageGuard";
 import UpdateProfileCRUD, { UpdateProfileFormData } from "./_components/UpdateProfileCRUD";
 
 const UpdateProfilePage = async () => {
+  const forbidden = await requirePageAccess(
+    "update-profile",
+    "view",
+    "You do not have permission to access this page."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
+
   const updateProfileRes = await loggedUser();
   console.log("logged user infor==>", updateProfileRes);
 

@@ -3,8 +3,15 @@ import { DashboardWrapper } from "../../_components/DashboardWrapper";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import CreateReviewForm from "./_components/CreateReviewForm";
+import { requirePageAccess } from "@/lib/pageGuard";
 
-const CreateReviewPage = () => {
+const CreateReviewPage = async () => {
+  const forbidden = await requirePageAccess(
+    "reviews",
+    "create",
+    "You do not have permission to create reviews."
+  );
+  if (forbidden) return <DashboardWrapper>{forbidden}</DashboardWrapper>;
   return (
     <DashboardWrapper>
       <div className="flex items-center justify-between mb-6">
