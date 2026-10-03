@@ -18,13 +18,30 @@ interface SidebarProps {
 export function Sidebar({ adminData, isMobile, onNavItemClick }: SidebarProps) {
   const pathname = usePathname();
 
+  // Super Admin sees every menu item regardless of stored feature paths.
+  const isSuperAdmin =
+    (adminData?.role?.name ?? "").toLowerCase() === "super admin";
+
+  // Feature paths are stored in two vocabularies: the backend seed uses
+  // `roles_permissions` / `page-setting` / `fivePillarsOfIslam`, while roles
+  // created from the dashboard store `roles` / `settings` / `fivepillars`.
+  // Normalize both sides so the permission filter works for either spelling.
+  const normalizeFeaturePath = (raw: string) => {
+    const key = (raw ?? "").replace(/^\/+|\/+$/g, "").toLowerCase();
+    const aliases: Record<string, string> = {
+      roles: "roles_permissions",
+      settings: "page-setting",
+      fivepillars: "fivepillarsofislam",
+      fivepillar: "fivepillarsofislam",
+    };
+    return aliases[key] ?? key;
+  };
+
   // Extract allowed paths from roleFeature and normalize them
   const allowedPaths: string[] =
-    adminData?.role?.roleFeature?.map((feature: any) => {
-      // Normalize the path - remove leading/trailing slashes
-      const path = feature.path.replace(/^\/+|\/+$/g, '');
-      return path;
-    }) ?? [];
+    adminData?.role?.roleFeature?.map((feature: any) =>
+      normalizeFeaturePath(feature.path)
+    ) ?? [];
 
   // console.log("Allowed Paths:", allowedPaths);
   // console.log("Admin Data:", adminData);
@@ -32,26 +49,42 @@ export function Sidebar({ adminData, isMobile, onNavItemClick }: SidebarProps) {
   // Helper function to normalize href for comparison
   const normalizeHref = (href: string) => {
     // Remove /dashboard/ prefix and leading/trailing slashes
-    return href.replace(/^\/dashboard\/|^\//, '').replace(/\/$/, '');
+    return normalizeFeaturePath(
+      href.replace(/^\/dashboard\/|^\//, "").replace(/\/$/, "")
+    );
   };
 
-  const filteredNavItems = NAV_ITEMS.filter((item) => {
+  // "/role" (role CRUD) and "/roles_permissions" (admin users) share the same
+  // "Roles" feature permission.
+  const ROLE_PERMISSION = "roles_permissions";
+  const isRolesPath = (normalizedHref: string) =>
+    normalizedHref === ROLE_PERMISSION || normalizedHref === "role";
+
+  const filteredNavItems = isSuperAdmin
+    ? NAV_ITEMS
+    : NAV_ITEMS.filter((item) => {
     const normalizedHref = normalizeHref(item.href);
-    
+
     // Always show Dashboard and Log Out
     if (item.href === "/dashboard" || item.label === "Log Out") return true;
-    
-    // Check if the item itself is allowed
-    if (allowedPaths.includes(normalizedHref)) return true;
-    
-    // If item has children, check if any child is allowed
+
+    // Check if the item itself is allowed (with roles alias)
+    if (
+      allowedPaths.includes(normalizedHref) ||
+      (isRolesPath(normalizedHref) && allowedPaths.includes(ROLE_PERMISSION))
+    )
+      return true;
+
+    // If item has children, check if any child is allowed.
+    // A parent-level grant (e.g. legacy `settings`) also unlocks its children.
     if (item.children && Array.isArray(item.children)) {
+      if (allowedPaths.includes(normalizedHref)) return true;
       return item.children.some((child: any) => {
         const normalizedChildHref = normalizeHref(child.href);
         return allowedPaths.includes(normalizedChildHref);
       });
     }
-    
+
     return false;
   });
 
@@ -86,11 +119,16 @@ export function Sidebar({ adminData, isMobile, onNavItemClick }: SidebarProps) {
               filteredNavItems.map((item) => {
                 const Icon = item.icon;
                 if (item.children && Array.isArray(item.children)) {
-                  // Filter children based on allowed paths
-                  const filteredChildren = item.children.filter((child: any) => {
-                    const normalizedChildHref = normalizeHref(child.href);
-                    return allowedPaths.includes(normalizedChildHref);
-                  });
+                  // Filter children based on allowed paths.
+                  // Super Admin (or a parent-level grant) sees all children.
+                  const filteredChildren =
+                    isSuperAdmin ||
+                    allowedPaths.includes(normalizeHref(item.href))
+                      ? item.children
+                      : item.children.filter((child: any) => {
+                          const normalizedChildHref = normalizeHref(child.href);
+                          return allowedPaths.includes(normalizedChildHref);
+                        });
 
                   // Don't show parent if no children are allowed
                   if (filteredChildren.length === 0) return null;

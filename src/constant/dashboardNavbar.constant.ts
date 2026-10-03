@@ -1,14 +1,15 @@
-import { 
-  LayoutDashboard, 
-  Grip, 
-  Package, 
-  Landmark, 
-  Users, 
-  ImagePlus, 
-  MessageCircleMore, 
-  FileText, 
+import {
+  LayoutDashboard,
+  Grip,
+  Package,
+  Landmark,
+  Users,
+  ImagePlus,
+  MessageCircleMore,
+  FileText,
   Shield,
-  Settings, 
+  ShieldCheck,
+  Settings,
   Layers2,
   Mail,
   User,
@@ -80,11 +81,18 @@ export const NAV_ITEMS = [
     href: "/blogs" 
   },
   
-  // Roles & Permissions - index: 2
-  { 
-    icon: Shield, 
-    label: "Roles", 
-    href: "/roles_permissions" 
+  // Roles & Permissions - index: 2 (role CRUD at /dashboard/role)
+  {
+    icon: ShieldCheck,
+    label: "Roles & Permissions",
+    href: "/role"
+  },
+
+  // Admin users management (shares the "Roles" feature permission)
+  {
+    icon: Shield,
+    label: "Admin Users",
+    href: "/roles_permissions"
   },
 
   

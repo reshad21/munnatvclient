@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -11,12 +10,30 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { deleteAdminUser } from "@/services/role";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { deleteAdminUser } from "@/services/auth";
 import { showErrorToast, showSuccessToast } from "@/utils/toastMessage";
 import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
-const DeleteAdminUserDialog = ({ id }: { id?: string }) => {
+const DeleteAdminUserDialog = ({
+  id,
+  name,
+  disabled,
+  disabledReason,
+}: {
+  id?: string;
+  name?: string;
+  disabled?: boolean;
+  disabledReason?: string;
+}) => {
+    const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
 
@@ -24,40 +41,54 @@ const DeleteAdminUserDialog = ({ id }: { id?: string }) => {
         startTransition(async () => {
             const result = await deleteAdminUser(id);
 
-            if (result.statusCode === 200) {
+            if (result?.statusCode === 200) {
                 setIsOpen(false);
-                showSuccessToast(result.message);
+                showSuccessToast(result.message || "Admin user deleted");
+                router.refresh();
             } else {
                 setIsOpen(false);
-                showErrorToast(result.message);
+                showErrorToast(result?.message || "Failed to delete admin user");
             }
         });
     };
 
     return (
-        <div>
+        <TooltipProvider>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogTrigger asChild>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-red-400 cursor-pointer hover:text-red-600 bg-[#232326] border border-[#232326]"
-                    >
-                        <Trash2 size={18} />
-                    </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-[#18181b] text-white border border-[#232326]">
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <span className="inline-flex">
+                            <DialogTrigger asChild disabled={disabled}>
+                                <button
+                                    type="button"
+                                    aria-label={name ? `Delete ${name}` : "Delete admin user"}
+                                    disabled={disabled}
+                                    className={`w-8 h-8 flex items-center justify-center border border-red-600 rounded transition-colors ${
+                                        disabled
+                                            ? "text-red-300 border-red-200 cursor-not-allowed"
+                                            : "text-red-600 hover:bg-red-600 hover:text-white cursor-pointer"
+                                    }`}
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </DialogTrigger>
+                        </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{disabled ? disabledReason || "Delete" : "Delete"}</p>
+                    </TooltipContent>
+                </Tooltip>
+                <DialogContent>
                     <DialogHeader>
-                        <DialogTitle className="text-white">
-                            Are you absolutely sure?
-                        </DialogTitle>
-                        <DialogDescription className="text-gray-300">
-                            This action cannot be undone. This will permanently delete this
-                            blog and remove your data from our servers.
+                        <DialogTitle>Delete admin user?</DialogTitle>
+                        <DialogDescription>
+                            This action cannot be undone. This will permanently delete
+                            {name ? ` ${name}` : " this admin user"} and remove their
+                            data from our servers.
                         </DialogDescription>
                         <div className="flex justify-end space-x-2 mt-4">
                             <DialogClose asChild>
-                                <Button className="bg-[#232326] text-gray-200 hover:bg-[#2c2c31] border border-[#232326] cursor-pointer">
+                                <Button variant="outline" className="cursor-pointer">
                                     Cancel
                                 </Button>
                             </DialogClose>
@@ -65,7 +96,7 @@ const DeleteAdminUserDialog = ({ id }: { id?: string }) => {
                             <Button
                                 onClick={handleDelete}
                                 disabled={isPending}
-                                className="bg-red-600 text-white hover:bg-red-700 border border-red-600 cursor-pointer"
+                                className="bg-red-600 text-white hover:bg-red-700 cursor-pointer"
                             >
                                 {isPending ? "Deleting..." : "Delete"}
                             </Button>
@@ -73,7 +104,7 @@ const DeleteAdminUserDialog = ({ id }: { id?: string }) => {
                     </DialogHeader>
                 </DialogContent>
             </Dialog>
-        </div>
+        </TooltipProvider>
     );
 };
 

@@ -16,13 +16,18 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { updateRole } from "@/services/role";
 import { showErrorToast, showSuccessToast } from "@/utils/toastMessage";
-import { Check } from "lucide-react";
+import { Check, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { PulseLoader } from "react-spinners";
 import { DashboardWrapper } from "../../../_components/DashboardWrapper";
 import { RoleFeatures } from "@/constant/roleFeatures/index";
+import { createRoleSchema, type CreateRoleFormValues } from "@/validations/role.validation";
+import type { TAdminUser } from "@/types/auth.types";
+import GroupAvatar from "../../_components/GroupAvatar";
+import Link from "next/link";
 
 export default function EditRoleForm({
     roleData,
@@ -33,10 +38,17 @@ export default function EditRoleForm({
 }) {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
-    // Merge role features with all available features to show checked status
+
+    const isSuperAdmin =
+        (roleData?.name ?? "").toLowerCase() === "super admin";
+
+    // Merge role features with all available features to show checked status.
+    // Matches Create Role logic, but pre-fills from the fetched role.
+    // Match by name so legacy/seeded path variants still resolve correctly.
+    const roleFeatures = roleData?.roleFeature ?? [];
     const initialFeatures = RoleFeatures.map((feature) => ({
         ...feature,
-        isChecked: roleData.roleFeature.some(
+        isChecked: roleFeatures.some(
             (roleFeature: any) => roleFeature.name === feature.name
         ),
     }));
@@ -46,21 +58,32 @@ export default function EditRoleForm({
         (feature) => feature.isChecked
     ).length;
 
-    const form = useForm({
+    // Same validation rules as Create Role.
+    const form = useForm<CreateRoleFormValues>({
+        resolver: zodResolver(createRoleSchema),
         defaultValues: {
-            roleName: roleData.name,
+            roleName: roleData?.name ?? "",
             features: initialFeatures,
         },
     });
 
+    const assignedAdmins: TAdminUser[] = roleData?.adminUser ?? [];
+
     const handleFeatureCheck = (index: number) => {
+        const feature = features[index];
+        // Don't allow removing the core permission from Super Admin in the UI;
+        // the backend also rejects it with a 403 as a second layer.
+        if (isSuperAdmin && feature.name === "Roles" && feature.isChecked) {
+            showErrorToast("Super Admin must keep the Roles permission");
+            return;
+        }
         const updatedFeatures = [...features];
         updatedFeatures[index].isChecked = !updatedFeatures[index].isChecked;
         setFeatures(updatedFeatures);
         form.setValue("features", updatedFeatures);
     };
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: CreateRoleFormValues) => {
         const selectedFeatures = data.features
             .filter((feature: any) => feature.isChecked)
             .map((feature: any) => ({
@@ -77,10 +100,11 @@ export default function EditRoleForm({
         startTransition(async () => {
             const result = await updateRole(id, payload);
             if (result?.statusCode === 200) {
-                showSuccessToast(result.message);
+                showSuccessToast(result.message || "Role updated successfully");
                 router.push("/dashboard/role");
+                router.refresh();
             } else {
-                showErrorToast(result?.message);
+                showErrorToast(result?.message || "Failed to update role");
             }
         });
     };
@@ -88,10 +112,22 @@ export default function EditRoleForm({
     return (
         <div className="min-h-screen bg-white">
             <DashboardWrapper>
-                <div className="max-w-5xl mx-auto">
+                <Link href="/dashboard/role">
+                    <div className="mb-6">
+                        <Button
+                            variant="outline"
+                            className="flex items-center gap-2 cursor-pointer"
+                        >
+                            <ArrowLeft className="w-4 h-4" />
+                            Back to Roles &amp; Permissions
+                        </Button>
+                    </div>
+                </Link>
+
+                <div className="mx-auto w-full">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
-                            <div className="rounded-lg bg-slate-50 p-8">
+                            <div className="rounded-lg bg-brand/20 p-8">
                                 <FormField
                                     control={form.control}
                                     name="roleName"
@@ -104,10 +140,17 @@ export default function EditRoleForm({
                                                 <Input
                                                     placeholder="Enter role name"
                                                     className="max-w-md bg-white"
+                                                    disabled={isSuperAdmin}
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <FormMessage />
+                                            {isSuperAdmin ? (
+                                                <p className="text-sm text-muted-foreground">
+                                                    The Super Admin role cannot be renamed.
+                                                </p>
+                                            ) : (
+                                                <FormMessage />
+                                            )}
                                         </FormItem>
                                     )}
                                 />
@@ -146,9 +189,7 @@ export default function EditRoleForm({
                                                                         onCheckedChange={() =>
                                                                             handleFeatureCheck(featureIndex)
                                                                         }
-                                                                        className={
-                                                                            feature.isChecked ? "border-primary" : ""
-                                                                        }
+                                                                        className="cursor-pointer"
                                                                     />
                                                                 </FormControl>
                                                                 <div className="flex-1">
@@ -174,6 +215,49 @@ export default function EditRoleForm({
                                 </div>
                             </div>
 
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-lg font-semibold">Assigned Admins</h2>
+                                    <Badge
+                                        variant="outline"
+                                        className="bg-primary/5 px-3 py-1 text-primary"
+                                    >
+                                        {assignedAdmins.length} assigned
+                                    </Badge>
+                                </div>
+                                <div className="rounded-lg border border-slate-200 p-4">
+                                    {assignedAdmins.length > 0 ? (
+                                        <div className="flex flex-col gap-4">
+                                            <GroupAvatar users={assignedAdmins} />
+                                            <ul className="divide-y divide-slate-100">
+                                                {assignedAdmins.map((admin) => (
+                                                    <li
+                                                        key={admin.id}
+                                                        className="flex items-center justify-between py-2 text-sm"
+                                                    >
+                                                        <span className="font-medium">
+                                                            {admin.fullName}
+                                                        </span>
+                                                        <span className="text-muted-foreground">
+                                                            {admin.email}
+                                                        </span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                            <p className="text-sm text-muted-foreground">
+                                                To move an admin to another role, use the admin
+                                                management flow (update admin role). Admins are
+                                                shown here read-only.
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-muted-foreground">
+                                            No admins are assigned to this role yet.
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+
                             <Separator className="my-8" />
 
                             <div className="flex justify-end gap-3">
@@ -181,6 +265,7 @@ export default function EditRoleForm({
                                     type="button"
                                     variant="outline"
                                     onClick={() => router.push("/dashboard/role")}
+                                    className="cursor-pointer"
                                 >
                                     Cancel
                                 </Button>
@@ -189,7 +274,7 @@ export default function EditRoleForm({
                                     type="submit"
                                     className="bg-brand hover:bg-brand/80 transition duration-200 cursor-pointer"
                                 >
-                                    {isPending ? <PulseLoader color="#ffffff" /> : "Update"}
+                                    {isPending ? <PulseLoader color="#ffffff" /> : "Update Role"}
                                 </Button>
                             </div>
                         </form>

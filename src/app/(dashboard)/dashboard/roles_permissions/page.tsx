@@ -1,10 +1,9 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { DashboardWrapper } from "../_components/DashboardWrapper";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import RolesTable from "./_components/RolesTable";
-import { getRoles } from "@/services/role";
-import { TQuery } from "@/types/query.types";
+import AdminUsersTable from "./_components/AdminUsersTable";
+import { getAdminUsers, loggedUser } from "@/services/auth";
 
 const RolesandPermissionPage = async (props: {
   searchParams: Promise<{ search: string; page: string }>;
@@ -12,14 +11,17 @@ const RolesandPermissionPage = async (props: {
   const searchParams = await props.searchParams;
   const search = searchParams.search || "";
   const page = parseInt(searchParams.page) || 1;
-  const query: TQuery[] = [
-    { key: "orderBy", value: JSON.stringify({ createdAt: "desc" }) },
-    { key: "searchTerm", value: search },
-    { key: "page", value: page.toString() },
-    { key: "limit", value: "10" },
-  ];
-  const adminUsers = await getRoles(query);
-  console.log("see admin data==>",adminUsers.data);
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: "10",
+  });
+  if (search) params.set("searchTerm", search);
+
+  const [adminUsers, currentUser] = await Promise.all([
+    getAdminUsers(`?${params.toString()}`),
+    loggedUser(),
+  ]);
+
   return (
     <DashboardWrapper>
       <div className="flex items-center justify-between mb-6">
@@ -38,7 +40,12 @@ const RolesandPermissionPage = async (props: {
           <span className="font-medium">Create Admin User</span>
         </Link>
       </div>
-      <RolesTable rolesData={adminUsers.data} />
+      <Suspense fallback={<div>Loading admin users...</div>}>
+        <AdminUsersTable
+          users={adminUsers?.data ?? []}
+          currentUserEmail={currentUser?.email}
+        />
+      </Suspense>
     </DashboardWrapper>
   );
 };

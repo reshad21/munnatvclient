@@ -147,6 +147,49 @@ export const deleteAdminUser = async (id: string | undefined) => {
   return await response;
 };
 
+export const getLoggedAdminDetails = async () => {
+  const response = await apiRequest(`auth/me`, {
+    method: "GET",
+    authRequired: true,
+  });
+
+  return await response;
+};
+
+export const getAdminUsers = async (queryString = "") => {
+  const response = await apiRequest(`auth/admin-users${queryString}`, {
+    method: "GET",
+    authRequired: true,
+  });
+
+  return await response;
+};
+
+export const getAdminUserDetails = async (id: string) => {
+  const response = await apiRequest(`auth/admin-users/${id}`, {
+    method: "GET",
+    authRequired: true,
+  });
+
+  return await response;
+};
+
+export const updateAdminUser = async (
+  id: string,
+  data: FormData | FieldValues
+) => {
+  const isFormData = data instanceof FormData;
+  const response = await apiRequest(`auth/admin-users/${id}`, {
+    method: "PATCH",
+    body: isFormData ? (data as FormData) : JSON.stringify(data),
+    authRequired: true,
+  });
+
+  revalidatePath("/dashboard/roles_permissions");
+
+  return await response;
+};
+
 export const dashboardOverview = async () => {
   const response = await apiRequest(`auth/overview-dashboard`, {
     method: "GET",

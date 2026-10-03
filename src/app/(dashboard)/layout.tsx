@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-import { getRoles } from "@/services/role";
+import { getLoggedAdminDetails } from "@/services/auth";
 import { Navbar } from "./_components/DashboardNavbar";
 import { Sidebar } from "./_components/DashboardSidebar";
 
@@ -9,57 +9,53 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const adminUsers = await getRoles([]);
-  console.log("see admin data==>", adminUsers?.data);
+  // Load the LOGGED-IN admin (role + feature list) so the sidebar
+  // permission filter reflects the current user, not an arbitrary role.
+  let me: any = null;
+  try {
+    const res = await getLoggedAdminDetails();
+    me = res?.data ?? null;
+  } catch {
+    me = null;
+  }
 
-  // Extract role data from API response
-  const roleData = adminUsers?.data?.[0];
-  
-  // Extract admin user from the nested structure
-  const adminUserFromApi = roleData?.adminUser?.[0];
-
-  // Construct adminData using actual API response
-  const adminData = adminUserFromApi ? {
-    // Admin user fields
-    id: adminUserFromApi.id,
-    fullName: adminUserFromApi.fullName,
-    email: adminUserFromApi.email,
-    password: adminUserFromApi.password,
-    profilePhoto: adminUserFromApi.profilePhoto,
-    coverPhoto: adminUserFromApi.coverPhoto || null,
-    status: roleData.status,
-    isDeleted: roleData.isDeleted,
-    roleId: roleData.id,
-    createdAt: roleData.createdAt,
-    updatedAt: roleData.updatedAt,
-    
-    // Role information
-    role: {
-      id: roleData.id,
-      name: roleData.name,
-      status: roleData.status,
-      roleFeature: roleData.roleFeature || [],
-    },
-  } : {
-    // Fallback demo data if API fails
-    id: "admin-001",
-    fullName: "John Doe",
-    email: "john.doe@example.com",
-    password: "hashed_password_here",
-    profilePhoto: null,
-    coverPhoto: null,
-    status: "ACTIVE",
-    isDeleted: false,
-    roleId: "role-001",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    role: {
-      id: "role-001",
-      name: "Super Admin",
-      status: "ACTIVE",
-      roleFeature: [],
-    },
-  };
+  // Construct adminData from the authenticated user.
+  // Note: password hash is intentionally omitted - never send it to the client.
+  const adminData = me
+    ? {
+        id: me.id,
+        fullName: me.fullName,
+        email: me.email,
+        profilePhoto: me.profilePhoto,
+        status: me.status,
+        roleId: me.roleId,
+        createdAt: me.createdAt,
+        updatedAt: me.updatedAt,
+        role: {
+          id: me.role?.id,
+          name: me.role?.name,
+          status: me.role?.status,
+          roleFeature: me.role?.roleFeature || [],
+        },
+      }
+    : {
+        // Fallback when unauthenticated/API fails: sidebar shows
+        // only Dashboard + Log Out via the permission filter.
+        id: null,
+        fullName: "",
+        email: "",
+        profilePhoto: null,
+        status: "INACTIVE",
+        roleId: null,
+        createdAt: null,
+        updatedAt: null,
+        role: {
+          id: null,
+          name: "",
+          status: "INACTIVE",
+          roleFeature: [],
+        },
+      };
 
   return (
     <section className="flex min-h-screen flex-col">

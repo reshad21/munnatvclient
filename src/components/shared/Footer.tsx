@@ -147,7 +147,7 @@ const Footer = async () => {
   if (!topberData) return null;
 
   const currentYear = new Date().getFullYear();
-  const description = 'বাংলাদেশের প্রথম আইপিটিভি চ্যানেল। আমাদের সাথে থাকুন সর্বশেষ খবর, বিনোদন, এবং আরও অনেক কিছুতে।';
+  const description = 'বিশ্বের প্রথম আইপিটিভি চ্যানেল। আমাদের সাথে থাকুন সর্বশেষ খবর, বিনোদন, এবং আরও অনেক কিছুতে।';
 
   return (
     <footer 
