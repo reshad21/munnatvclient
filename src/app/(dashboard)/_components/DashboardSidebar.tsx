@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Link from "next/link";
@@ -9,10 +8,18 @@ import { NAV_ITEMS } from "@/constant/dashboardNavbar.constant";
 import { usePermissions } from "@/components/permissions";
 import { sidebarHrefToFeature } from "@/constant/permissions";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import React, { useState } from "react";
+import type { TDashboardAdminData } from "@/types/auth.types";
+
+type NavChild = {
+  label: string;
+  href: string;
+  icon?: LucideIcon;
+};
 
 interface SidebarProps {
-  adminData?: any;
+  adminData?: TDashboardAdminData;
   isMobile?: boolean;
   onNavItemClick?: () => void;
 }
@@ -42,7 +49,7 @@ export function Sidebar({ isMobile, onNavItemClick }: SidebarProps) {
       const parentFeature = sidebarHrefToFeature(item.href);
       if (parentFeature && permissions[parentFeature]?.includes("view"))
         return true;
-      return item.children.some((child: any) =>
+      return item.children.some((child: NavChild) =>
         isItemAllowed(child.href, child.label)
       );
     }
@@ -87,7 +94,7 @@ export function Sidebar({ isMobile, onNavItemClick }: SidebarProps) {
                       permissions[parentFeature]?.includes("view"));
                   const filteredChildren = parentGranted
                     ? item.children
-                    : item.children.filter((child: any) =>
+                    : item.children.filter((child: NavChild) =>
                         isItemAllowed(child.href, child.label)
                       );
 
@@ -117,7 +124,7 @@ export function Sidebar({ isMobile, onNavItemClick }: SidebarProps) {
                       </button>
                       {isOpen && (
                         <div className="mt-1 space-y-1 ml-4">
-                          {filteredChildren.map((child: any) => {
+                          {filteredChildren.map((child: NavChild) => {
                             const ChildIcon = child.icon;
                             return (
                               <Link

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -26,24 +25,32 @@ import {
     canonicalFeatureKey,
     countSelectedPermissions,
     FEATURE_KEYS,
+    PERMISSION_ACTIONS,
     SUPPORTED_ACTIONS,
+    type PermissionAction,
     type PermissionsMap,
 } from "@/constant/permissions";
 import { rolePermissionSchema, type RolePermissionFormValues } from "@/validations/role.validation";
 import Link from "next/link";
+import type { TRole } from "@/types/auth.types";
 
 /** Prefill the matrix from granular rows, falling back to legacy features. */
-const buildInitialPermissions = (roleData: any): PermissionsMap => {
+const buildInitialPermissions = (roleData: TRole | undefined): PermissionsMap => {
     const map: PermissionsMap = {};
     const rows = roleData?.rolePermission ?? [];
     if (rows.length > 0) {
         for (const row of rows) {
             const feature = canonicalFeatureKey(row.feature);
             if (!FEATURE_KEYS.includes(feature)) continue;
+            if (
+                !(PERMISSION_ACTIONS as readonly string[]).includes(row.action)
+            )
+                continue;
+            const action = row.action as PermissionAction;
             const supported = SUPPORTED_ACTIONS[feature] ?? [];
-            if (!(supported as string[]).includes(row.action)) continue;
+            if (!(supported as string[]).includes(action)) continue;
             if (!map[feature]) map[feature] = [];
-            if (!map[feature].includes(row.action)) map[feature].push(row.action);
+            if (!map[feature].includes(action)) map[feature].push(action);
         }
         return map;
     }
@@ -59,7 +66,7 @@ export default function EditRoleForm({
     roleData,
     id,
 }: {
-    roleData: any;
+    roleData: TRole;
     id: string;
 }) {
     const router = useRouter();

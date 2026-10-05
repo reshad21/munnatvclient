@@ -5,9 +5,7 @@ import React from "react";
 const RolePermissionSummary: React.FC<{ role: TRole | undefined }> = ({
   role,
 }) => {
-  const granular = (role as any)?.rolePermission as
-    | { feature: string; action: string }[]
-    | undefined;
+  const granular = role?.rolePermission;
 
   if (granular && granular.length > 0) {
     const features = new Set(granular.map((p) => p.feature)).size;

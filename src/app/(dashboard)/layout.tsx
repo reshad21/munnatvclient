@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { PermissionProvider } from "@/components/permissions";
 import { getLoggedAdminDetails } from "@/services/auth";
+import type { TDashboardAdminData, TLoggedAdminMe } from "@/types/auth.types";
 import { Navbar } from "./_components/DashboardNavbar";
 import { Sidebar } from "./_components/DashboardSidebar";
 
@@ -12,7 +13,7 @@ export default async function DashboardLayout({
 }) {
   // Load the LOGGED-IN admin (role + feature list) so the sidebar
   // permission filter reflects the current user, not an arbitrary role.
-  let me: any = null;
+  let me: TLoggedAdminMe | null = null;
   try {
     const res = await getLoggedAdminDetails();
     me = res?.data ?? null;
@@ -22,21 +23,21 @@ export default async function DashboardLayout({
 
   // Construct adminData from the authenticated user.
   // Note: password hash is intentionally omitted - never send it to the client.
-  const adminData = me
+  const adminData: TDashboardAdminData = me
     ? {
         id: me.id,
         fullName: me.fullName,
         email: me.email,
-        profilePhoto: me.profilePhoto,
-        status: me.status,
+        profilePhoto: me.profilePhoto ?? null,
+        status: me.status ?? "INACTIVE",
         roleId: me.roleId,
-        createdAt: me.createdAt,
-        updatedAt: me.updatedAt,
+        createdAt: me.createdAt ?? null,
+        updatedAt: me.updatedAt ?? null,
         role: {
-          id: me.role?.id,
-          name: me.role?.name,
-          status: me.role?.status,
-          roleFeature: me.role?.roleFeature || [],
+          id: me.role?.id ?? null,
+          name: me.role?.name ?? "",
+          status: me.role?.status ?? "INACTIVE",
+          roleFeature: me.role?.roleFeature ?? [],
         },
       }
     : {

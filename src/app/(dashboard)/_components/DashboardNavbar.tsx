@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { ChevronDown, Eye, Menu } from "lucide-react";
@@ -25,9 +24,10 @@ import logo from "../../../../public/hilful_fujul.png";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useRouter } from "next/navigation";
 import { logout } from "@/services/auth";
+import type { TDashboardAdminData } from "@/types/auth.types";
 
 interface NavbarProps {
-  adminData: any;
+  adminData: TDashboardAdminData;
 }
 
 export function Navbar({ adminData }: NavbarProps) {
